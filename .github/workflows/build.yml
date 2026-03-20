@@ -1,0 +1,17 @@
+name: "Build"
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Backend Build
+    uses: ISTEAMX/IS-DevOps/.github/workflows/continuous-build-backend.yml@main
+    with:
+      java-version: "21"
