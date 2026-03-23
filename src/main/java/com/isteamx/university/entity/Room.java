@@ -30,6 +30,9 @@ public class Room {
     @Column(nullable = false)
     private String type;
 
+    @Column(nullable = false)
+    private String location;
+
     @ElementCollection
     @CollectionTable(name = "room_equipment",joinColumns = @JoinColumn(name = "room_id"))
     @Column(nullable = false)
