@@ -1,5 +1,6 @@
 package com.isteamx.university.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,15 +17,20 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+    private Long id;
 
     @Column(unique = true,nullable = false)
-    String email;
+    private String email;
 
     @Column(nullable = false)
-    String password;
+    private String password;
 
     @Column(nullable = false)
-    String role;
+    private String role;
 
+
+    @OneToOne
+    @JoinColumn(name = "professor_id",referencedColumnName = "id",nullable = false)
+    @JsonIgnore
+    private Professor professor;
 }
