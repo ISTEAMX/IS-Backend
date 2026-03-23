@@ -16,15 +16,18 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+    private Long id;
 
     @Column(unique = true,nullable = false)
-    String email;
+    private String email;
 
     @Column(nullable = false)
-    String password;
+    private String password;
 
     @Column(nullable = false)
-    String role;
+    private String role;
 
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Professor professor;
 }
