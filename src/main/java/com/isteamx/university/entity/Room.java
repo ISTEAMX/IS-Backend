@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "room")
+@Table(name = "rooms")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -37,4 +37,8 @@ public class Room {
     @CollectionTable(name = "room_equipment",joinColumns = @JoinColumn(name = "room_id"))
     @Column(nullable = false)
     private List<String> equipment;
+
+    @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
+    private List<Schedule> schedule;
+
 }

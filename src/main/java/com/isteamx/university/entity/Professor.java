@@ -7,8 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
-@Table(name = "professor")
+@Table(name = "professors")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -32,4 +34,7 @@ public class Professor {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private User user;
+
+    @OneToMany(mappedBy = "professor",cascade = CascadeType.ALL)
+    private List<Schedule> schedule;
 }

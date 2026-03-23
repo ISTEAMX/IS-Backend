@@ -6,9 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
+@Table(name = "subjects")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Subject {
@@ -21,6 +24,9 @@ public class Subject {
     private String name;
 
     @Column(nullable = false)
-    private String activity_type;
+    private String activityType;
+
+    @OneToMany(mappedBy = "subject",cascade = CascadeType.ALL)
+    private List<Schedule> schedule;
 
 }
