@@ -1,6 +1,5 @@
 package com.isteamx.university.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,8 +28,6 @@ public class User {
     private String role;
 
 
-    @OneToOne
-    @JoinColumn(name = "professor_id",referencedColumnName = "id",nullable = false)
-    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Professor professor;
 }
