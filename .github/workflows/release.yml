@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      component:
+        description: 'Which component to release (backend). Use "backend" for this workflow.'
+        required: true
+        default: 'backend'
+      release_type:
+        description: 'Semantic version bump: major, minor, or patch'
+        required: true
+        default: 'patch'
+
+jobs:
+  release:
+    name: Backend semantic release
+    uses: ISTEAMX/IS-DevOps/.github/workflows/continuous-release-backend.yml@main
+    with:
+      component: "${{ github.event.inputs.component }}"
+      release_type: "${{ github.event.inputs.release_type }}"
+    secrets:
+      GIT_PAT: ${{ secrets.GIT_PAT }}
