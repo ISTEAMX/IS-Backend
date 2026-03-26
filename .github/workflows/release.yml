@@ -12,6 +12,9 @@ on:
         required: true
         default: 'patch'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     name: Backend semantic release
