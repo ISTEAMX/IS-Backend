@@ -19,5 +19,3 @@ jobs:
     with:
       component: "${{ github.event.inputs.component }}"
       release_type: "${{ github.event.inputs.release_type }}"
-    secrets:
-      GIT_PAT: ${{ secrets.GIT_PAT }}
