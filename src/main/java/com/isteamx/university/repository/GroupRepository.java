@@ -2,6 +2,8 @@ package com.isteamx.university.repository;
 
 import com.isteamx.university.entity.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface GroupRespository extends JpaRepository<Group, Long> {
+@Repository
+public interface GroupRepository extends JpaRepository<Group, Long> {
 }
