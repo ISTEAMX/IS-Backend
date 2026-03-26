@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
+
 public class ApplicationConfig {
 
     private final UserRepository userRepository;
@@ -23,7 +24,7 @@ public class ApplicationConfig {
     public UserDetailsService userDetailsService() {
         return username -> {
             com.isteamx.university.entity.User myUser = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found cu emailul: " + username));
+                    .orElseThrow(() -> new UsernameNotFoundException("User " + username+ " not found"));
 
 
             return org.springframework.security.core.userdetails.User.builder()

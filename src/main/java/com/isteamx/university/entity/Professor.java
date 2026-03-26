@@ -30,7 +30,7 @@ public class Professor {
     @Column(nullable = false)
     private String department;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private User user;

@@ -41,7 +41,7 @@ public class AuthTest {
     private AuthServiceImpl authServiceImpl;
 
     @Test
-    public void testLogin() {
+    public void shouldLogin() {
         User user = new User();
         user.setEmail("test@test.com");
         user.setPassword("encodedPassword");
@@ -67,7 +67,7 @@ public class AuthTest {
     }
 
     @Test
-    public void testRegister() {
+    public void shouldRegister() {
 
     UserDTO userDTO = new UserDTO();
     userDTO.setEmail("test@test.com");
