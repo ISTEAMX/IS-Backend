@@ -21,8 +21,17 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> (org.springframework.security.core.userdetails.UserDetails) userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> {
+            com.isteamx.university.entity.User myUser = userRepository.findByEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found cu emailul: " + username));
+
+
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(myUser.getEmail())
+                    .password(myUser.getPassword())
+                    .authorities(myUser.getRole())
+                    .build();
+        };
     }
 
     @Bean
@@ -38,7 +47,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
         return config.getAuthenticationManager();
     }
 }
