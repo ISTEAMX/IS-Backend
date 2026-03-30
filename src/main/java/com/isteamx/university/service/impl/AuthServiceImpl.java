@@ -4,6 +4,8 @@ import com.isteamx.university.dto.LoginDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
 import com.isteamx.university.entity.User;
+import com.isteamx.university.exception.ResourceNotFoundException;
+import com.isteamx.university.exception.UserUnauthorizedException;
 import com.isteamx.university.repository.UserRepository;
 import com.isteamx.university.service.AuthService;
 import com.isteamx.university.util.JwtUtil;
@@ -27,10 +29,10 @@ public class AuthServiceImpl implements AuthService {
         String email = loginDTO.getEmail();
         String password = loginDTO.getPassword();
 
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Sorry this email is not registered"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Sorry this email is not registered"));
 
         if(!passwordEncoder.matches(password,user.getPassword())){
-            throw new RuntimeException("Incorrect password");
+            throw new UserUnauthorizedException("Incorrect password");
         }
 
         return jwtUtil.generateToken(loginDTO.getEmail());
@@ -40,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDTO register(UserDTO userDTO) {
 
         if(userRepository.findByEmail(userDTO.getEmail()).isPresent()){
-            throw new RuntimeException("User already exists");
+            throw new ResourceNotFoundException("User already exists");
         }
 
         User user = userDTOMapper.toEntity(userDTO);

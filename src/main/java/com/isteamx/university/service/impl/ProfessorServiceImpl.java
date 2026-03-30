@@ -2,6 +2,7 @@ package com.isteamx.university.service.impl;
 import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.dtoMapper.ProfessorDTOMapper;
 import com.isteamx.university.entity.Professor;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.ProfessorRepository;
 import com.isteamx.university.service.ProfessorService;
 import jakarta.transaction.Transactional;
@@ -36,7 +37,7 @@ public class ProfessorServiceImpl implements ProfessorService {
     public void updateProfessor(ProfessorDTO professorDTO) {
 
         Professor professor = professorRepository.findById(professorDTO.getId())
-                .orElseThrow(() -> new RuntimeException("Professor with ID " + professorDTO.getId() + " does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorDTO.getId() + " does not exist"));
 
         professor.setFirstName(professorDTO.getFirstName());
         professor.setLastName(professorDTO.getLastName());
