@@ -73,11 +73,16 @@ The `application.properties` file reads these from environment variables with th
 
 In production, the backend is deployed as a Docker container on an **EC2 instance** (`t3.micro`, `eu-central-1`). The Docker image is stored in **AWS ECR**.
 
-The EC2 instance is provisioned via Terraform with a user-data script that automatically installs Docker, AWS CLI, and starts a PostgreSQL container. See the [IS-DevOps README](../IS-DevOps/README.md) for full deployment instructions.
+The EC2 instance is provisioned via Terraform with a user-data script that automatically installs Docker, fetches runtime secrets from **AWS Secrets Manager**, and connects to a managed **RDS PostgreSQL** database. See the [IS-DevOps README](../IS-DevOps/README.md) for full deployment instructions.
 
-| Resource    | Details                         |
-|-------------|---------------------------------|
-| EC2         | `t3.micro`, Ubuntu 22.04       |
-| Elastic IP  | `35.158.14.254`                 |
-| ECR         | `isteamx-backend`              |
-| Region      | `eu-central-1`                  |
+| Resource         | Details                         |
+|------------------|---------------------------------|
+| EC2              | `t3.micro`, Ubuntu 22.04       |
+| RDS Database     | `db.t3.micro`, PostgreSQL 15   |
+| Secrets Manager  | `isteamx/backend` JSON secret   |
+| Elastic IP       | `35.158.14.254`                 |
+| ECR              | `isteamx-backend`              |
+| Region           | `eu-central-1`                  |
+
+### AWS Cost Management (Power Scheduler)
+Need to pause the infrastructure to save money? See the **AWS Power Scheduler** feature documented in the [IS-DevOps README](../IS-DevOps/README.md) to safely start and stop the EC2 and RDS instances without losing data.
