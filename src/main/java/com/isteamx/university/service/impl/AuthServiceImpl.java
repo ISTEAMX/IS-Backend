@@ -1,6 +1,7 @@
 package com.isteamx.university.service.impl;
 
 import com.isteamx.university.dto.LoginDTO;
+import com.isteamx.university.dto.RegisterDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
 import com.isteamx.university.entity.User;
@@ -49,6 +50,25 @@ public class AuthServiceImpl implements AuthService {
 
 
         User savedUser =  userRepository.save(user);
+
+        return userDTOMapper.toDTO(savedUser);
+    }
+
+    @Override
+    public UserDTO register(RegisterDTO registerDTO) {
+
+        if(userRepository.findByEmail(registerDTO.getEmail()).isPresent()){
+            throw new RuntimeException("User already exists");
+        }
+
+        User user = new User();
+        user.setFirstName(registerDTO.getFirstName());
+        user.setLastName(registerDTO.getLastName());
+        user.setEmail(registerDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setRole("USER");
+
+        User savedUser = userRepository.save(user);
 
         return userDTOMapper.toDTO(savedUser);
     }

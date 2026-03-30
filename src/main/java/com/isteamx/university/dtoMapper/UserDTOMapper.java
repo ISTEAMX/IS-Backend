@@ -19,6 +19,8 @@ public class UserDTOMapper {
         }
         UserDTO dto = new UserDTO();
         dto.setId(entity.getId());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
         dto.setEmail(entity.getEmail());
         dto.setPassword(entity.getPassword());
         dto.setRole(entity.getRole());
@@ -37,6 +39,8 @@ public class UserDTOMapper {
         }
         User user = new User();
         user.setId(dto.getId());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setRole(dto.getRole());

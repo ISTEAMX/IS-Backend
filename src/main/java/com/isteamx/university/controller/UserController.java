@@ -1,6 +1,7 @@
 package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.LoginDTO;
+import com.isteamx.university.dto.RegisterDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +21,15 @@ public class UserController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String,String>> RegisterUser(@RequestBody UserDTO userDTO) {
-         authService.register(userDTO);
+    public ResponseEntity<Map<String,String>> registerUser(@RequestBody RegisterDTO registerDTO) {
+         authService.register(registerDTO);
          return ResponseEntity.ok().body(Map.of("message", "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public String LoginUser(@RequestBody LoginDTO loginDTO) {
-        return authService.login(loginDTO);
+    public ResponseEntity<Map<String,String>> loginUser(@RequestBody LoginDTO loginDTO) {
+        String token = authService.login(loginDTO);
+        return ResponseEntity.ok().body(Map.of("token", token));
     }
-
 
 }
