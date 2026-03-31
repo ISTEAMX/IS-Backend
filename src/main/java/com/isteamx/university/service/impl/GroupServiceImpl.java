@@ -6,6 +6,7 @@ import com.isteamx.university.entity.Group;
 import com.isteamx.university.repository.GroupRepository;
 import com.isteamx.university.service.GroupService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class GroupServiceImpl implements GroupService {
         return groups.stream().map(groupDTOMapper::toDTO).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
@@ -43,6 +45,7 @@ public class GroupServiceImpl implements GroupService {
         return groupDTOMapper.toDTO(savedGroup);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void updateGroup(GroupDTO groupDTO) {
         Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new RuntimeException("Group not found"));
@@ -53,6 +56,7 @@ public class GroupServiceImpl implements GroupService {
         groupRepository.save(group);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void deleteGroup(Long id) {
         Group group = groupRepository.findById(id).orElseThrow(()->new RuntimeException("Group not found"));

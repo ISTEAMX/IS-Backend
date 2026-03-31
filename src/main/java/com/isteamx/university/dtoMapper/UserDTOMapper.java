@@ -1,11 +1,10 @@
 package com.isteamx.university.dtoMapper;
-
-import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.dto.UserDTO;
-import com.isteamx.university.entity.Professor;
 import com.isteamx.university.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -14,43 +13,34 @@ public class UserDTOMapper {
     public final ProfessorDTOMapper professorDTOMapper;
 
     public UserDTO toDTO(User entity) {
-        if (entity == null) {
-            return null;
-        }
-        UserDTO dto = new UserDTO();
-        dto.setId(entity.getId());
-        dto.setFirstName(entity.getFirstName());
-        dto.setLastName(entity.getLastName());
-        dto.setEmail(entity.getEmail());
-        dto.setPassword(entity.getPassword());
-        dto.setRole(entity.getRole());
 
-        if(entity.getProfessor() != null) {
-            ProfessorDTO professor = professorDTOMapper.toDTO(entity.getProfessor());
-            dto.setProfessor(professor);
-        }
+        return Optional.ofNullable(entity).map(e -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setEmail(e.getEmail());
+            userDTO.setFirstName(e.getFirstName());
+            userDTO.setLastName(e.getLastName());
+            userDTO.setPassword(e.getPassword());
+            userDTO.setRole(e.getRole());
+            userDTO.setProfessor(Optional.ofNullable(e.getProfessor()).map(professorDTOMapper::toDTO).orElse(null));
 
-        return dto;
+            return userDTO;
+
+        }).orElse(null);
+
     }
 
     public User toEntity(UserDTO dto) {
-        if (dto == null) {
-            return null;
-        }
-        User user = new User();
-        user.setId(dto.getId());
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setRole(dto.getRole());
+        return Optional.ofNullable(dto).map( d -> {
+            User user = new User();
+            user.setEmail(d.getEmail());
+            user.setFirstName(d.getFirstName());
+            user.setLastName(d.getLastName());
+            user.setPassword(d.getPassword());
+            user.setRole(d.getRole());
+            user.setProfessor(Optional.ofNullable(d.getProfessor()).map( professorDTOMapper::toEntity).orElse(null));
 
-        if(dto.getProfessor() != null) {
-            Professor professor = professorDTOMapper.toEntity(dto.getProfessor());
-            professor.setUser(user);
-            user.setProfessor(professor);
-        }
+            return user;
 
-        return user;
+        }).orElse(null);
     }
 }

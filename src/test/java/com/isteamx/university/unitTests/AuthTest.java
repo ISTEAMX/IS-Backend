@@ -1,8 +1,6 @@
 package com.isteamx.university.unitTests;
 
-import com.isteamx.university.dto.LoginDTO;
-import com.isteamx.university.dto.ProfessorDTO;
-import com.isteamx.university.dto.UserDTO;
+import com.isteamx.university.dto.*;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
 import com.isteamx.university.entity.User;
 import com.isteamx.university.repository.UserRepository;
@@ -19,6 +17,7 @@ import java.util.Optional;
 
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -43,8 +42,20 @@ public class AuthTest {
     @Test
     public void shouldLogin() {
         User user = new User();
+        user.setFirstName("test");
+        user.setLastName("test");
         user.setEmail("test@test.com");
         user.setPassword("encodedPassword");
+
+        String token = "Token";
+
+        UserData userData = new UserData();
+        userData.setFirstName("test");
+        userData.setLastName("test");
+
+        ResponseLoginDTO responseLoginDTO = new ResponseLoginDTO();
+        responseLoginDTO.setUserData(userData);
+        responseLoginDTO.setToken(token);
 
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail("test@test.com");
@@ -56,52 +67,51 @@ public class AuthTest {
 
         when(passwordEncoder.matches(loginDTO.getPassword(),user.getPassword())).thenReturn(true);
 
-        String token = "Token";
 
         when(jwtUtil.generateToken(loginDTO.getEmail())).thenReturn(token);
 
-        String response = authServiceImpl.login(loginDTO);
+        ResponseLoginDTO response = authServiceImpl.login(loginDTO);
 
         assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(token);
+        assertThat(response.getToken()).isEqualTo("Token");
+        assertThat(response.getUserData().getFirstName()).isEqualTo("test");
+        assertThat(response.getUserData().getLastName()).isEqualTo("test");
     }
 
     @Test
     public void shouldRegister() {
 
     UserDTO userDTO = new UserDTO();
+    userDTO.setFirstName("test");
+    userDTO.setLastName("test");
     userDTO.setEmail("test@test.com");
     userDTO.setPassword("password");
-    userDTO.setRole("USER");
+    userDTO.setRole("PROFESSOR");
     ProfessorDTO professor = new ProfessorDTO();
+    professor.setDepartment("department");
     userDTO.setProfessor(professor);
 
-    User newUser = new User();
-    newUser.setEmail("test@test.com");
-    newUser.setPassword("password");
 
     User savedUser = new User();
     savedUser.setId(1L);
     savedUser.setEmail("test@test.com");
     savedUser.setPassword("encodedPassword");
 
-    UserDTO newUserDTO = new UserDTO();
-    newUserDTO.setEmail("test@test.com");
-    newUserDTO.setPassword("encodedPassword");
+    UserDTO expectedResponse = new UserDTO();
+    expectedResponse.setEmail("test@test.com");
+
 
     when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.empty());
 
-    when(userDTOMapper.toEntity(userDTO)).thenReturn(newUser);
-
     when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-    when(userRepository.save(newUser)).thenReturn(savedUser);
+    when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(userDTOMapper.toDTO(savedUser)).thenReturn(newUserDTO);
+    when(userDTOMapper.toDTO(savedUser)).thenReturn(expectedResponse);
 
     UserDTO response = authServiceImpl.register(userDTO);
 
     assertThat(response).isNotNull();
-    assertThat(response.getEmail()).isEqualTo(savedUser.getEmail());
+    assertThat(response.getEmail()).isEqualTo("test@test.com");
     }
 }
