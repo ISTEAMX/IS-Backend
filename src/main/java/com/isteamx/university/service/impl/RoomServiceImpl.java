@@ -7,6 +7,7 @@ import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class RoomServiceImpl implements RoomService {
     private final RoomRepository roomRepository;
     private final RoomDTOMapper roomDTOMapper;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public RoomDTO createRoom(RoomDTO roomDTO) {
         Room room = new Room();
@@ -49,6 +51,7 @@ public class RoomServiceImpl implements RoomService {
         return rooms.stream().map(roomDTOMapper::toDTO).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void updateRoom(RoomDTO roomDTO) {
         Room room = roomRepository.findById(roomDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Room not found"));
@@ -61,6 +64,7 @@ public class RoomServiceImpl implements RoomService {
 
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void deleteRoom(Long id) {
     roomRepository.deleteById(id);
