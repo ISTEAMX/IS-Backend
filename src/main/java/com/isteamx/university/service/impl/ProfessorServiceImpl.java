@@ -53,9 +53,10 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteProfessor(Long professorId) {
-        Professor professor = professorRepository.findById(professorId).orElseThrow(() -> new RuntimeException("Professor with ID " + professorId + " does not exist"));
-
-        professorRepository.delete(professor);
+        if(professorRepository.findById(professorId).isEmpty()){
+            throw new ResourceNotFoundException("Professor with id " + professorId + " doesn't exist");
+        }
+        professorRepository.deleteById(professorId);
     }
 
 

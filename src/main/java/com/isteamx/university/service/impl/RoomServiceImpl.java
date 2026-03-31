@@ -6,6 +6,7 @@ import com.isteamx.university.entity.Room;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,13 @@ public class RoomServiceImpl implements RoomService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public RoomDTO createRoom(RoomDTO roomDTO) {
+
+        if(roomRepository.existsByName(roomDTO.getName())){
+            throw new ResourceNotFoundException("Room with name " + roomDTO.getName() + " already exists");
+        }
+
         Room room = new Room();
         room.setName(roomDTO.getName());
         room.setCapacity(roomDTO.getCapacity());
@@ -67,6 +74,10 @@ public class RoomServiceImpl implements RoomService {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void deleteRoom(Long id) {
+        if(roomRepository.findById(id).isEmpty()){
+            throw new ResourceNotFoundException("Room with id " + id + " doesn't exist");
+        }
+
     roomRepository.deleteById(id);
     }
 }

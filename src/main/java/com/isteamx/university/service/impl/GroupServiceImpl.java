@@ -3,8 +3,10 @@ package com.isteamx.university.service.impl;
 import com.isteamx.university.dto.GroupDTO;
 import com.isteamx.university.dtoMapper.GroupDTOMapper;
 import com.isteamx.university.entity.Group;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.GroupRepository;
 import com.isteamx.university.service.GroupService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ public class GroupServiceImpl implements GroupService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
         if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
@@ -47,6 +50,7 @@ public class GroupServiceImpl implements GroupService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public void updateGroup(GroupDTO groupDTO) {
         Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new RuntimeException("Group not found"));
 
@@ -58,9 +62,13 @@ public class GroupServiceImpl implements GroupService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public void deleteGroup(Long id) {
-        Group group = groupRepository.findById(id).orElseThrow(()->new RuntimeException("Group not found"));
-        groupRepository.delete(group);
+        if(groupRepository.findById(id).isEmpty()){
+            throw new ResourceNotFoundException("Group with id " + id + " doesn't exist");
+        }
+
+        groupRepository.deleteById(id);
 
     }
 }
