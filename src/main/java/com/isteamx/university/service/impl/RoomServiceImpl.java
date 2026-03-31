@@ -3,6 +3,7 @@ package com.isteamx.university.service.impl;
 import com.isteamx.university.dto.RoomDTO;
 import com.isteamx.university.dtoMapper.RoomDTOMapper;
 import com.isteamx.university.entity.Room;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO getRoom(Long id) {
 
-        Room room = roomRepository.findById(id).orElseThrow(()->new RuntimeException("Room not found"));
+        Room room = roomRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Room not found"));
 
         return roomDTOMapper.toDTO(room);
     }
@@ -50,7 +51,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public void updateRoom(RoomDTO roomDTO) {
-        Room room = roomRepository.findById(roomDTO.getId()).orElseThrow(()->new RuntimeException("Room not found"));
+        Room room = roomRepository.findById(roomDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Room not found"));
         room.setName(roomDTO.getName());
         room.setCapacity(roomDTO.getCapacity());
         room.setType(roomDTO.getType());
