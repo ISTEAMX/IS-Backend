@@ -9,6 +9,7 @@ import com.isteamx.university.exception.UserUnauthorizedException;
 import com.isteamx.university.repository.UserRepository;
 import com.isteamx.university.service.AuthService;
 import com.isteamx.university.util.JwtUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,6 +56,7 @@ public class AuthServiceImpl implements AuthService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public UserDTO register( UserDTO userDTO) {
 
         if(userRepository.findByEmail(userDTO.getEmail()).isPresent()){
