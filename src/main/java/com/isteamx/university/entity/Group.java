@@ -26,7 +26,7 @@ public class Group {
     @Column(nullable = false)
     private String specialization;
 
-    @Column(unique = true,nullable = false)
+    @Column(nullable = false)
     private int year;
 
     @OneToMany(mappedBy = "group",cascade = CascadeType.ALL)

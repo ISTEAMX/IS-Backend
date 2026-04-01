@@ -25,6 +25,7 @@ public class ScheduleDTOMapper {
                 schedule.getScheduleDay(),
                 schedule.getStartingHour(),
                 schedule.getEndingHour(),
+                schedule.getFrequency(),
                 professorMapper.toDTO(schedule.getProfessor()),
                 roomMapper.toDTO(schedule.getRoom()),
                 groupMapper.toDTO(schedule.getGroup()),
@@ -42,6 +43,7 @@ public class ScheduleDTOMapper {
         schedule.setScheduleDay(dto.scheduleDay());
         schedule.setStartingHour(dto.startingHour());
         schedule.setEndingHour(dto.endingHour());
+        schedule.setFrequency(dto.frequency());
         schedule.setProfessor(professorMapper.toEntity(dto.professorDTO()));
         schedule.setRoom(roomMapper.toEntity(dto.roomDTO()));
         schedule.setGroup(groupMapper.toEntity(dto.groupDTO()));

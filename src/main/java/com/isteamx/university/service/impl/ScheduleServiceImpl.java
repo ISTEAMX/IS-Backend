@@ -4,12 +4,15 @@ import com.isteamx.university.dto.CreateScheduleRequestDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
+import com.isteamx.university.enums.Frequency;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.*;
 import com.isteamx.university.service.ScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,14 +38,31 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Subject subject = subjectRepository.findById(createScheduleRequestDTO.subjectId()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
 
-        if(scheduleRepository.existsByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour())){
-        throw new ResourceNotFoundException("Schedule already exists");
+
+
+        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour());
+
+        Frequency newFrequency = createScheduleRequestDTO.frequency();
+
+        for(Schedule schedule : existingSchedules){
+            Frequency existingFrequency = schedule.getFrequency();
+
+            if(existingFrequency == Frequency.SAPTAMANAL && newFrequency == Frequency.SAPTAMANAL){
+                throw new IllegalStateException("The Room was already occupied");
+            }
+
+            if(existingFrequency == newFrequency){
+                throw new IllegalStateException("The Room was already occupied");
+            }
+
         }
+
 
         Schedule schedule =  new Schedule();
         schedule.setStartingHour(createScheduleRequestDTO.startingHour());
         schedule.setEndingHour(createScheduleRequestDTO.endingHour());
         schedule.setScheduleDay(createScheduleRequestDTO.scheduleDay());
+        schedule.setFrequency(createScheduleRequestDTO.frequency());
         schedule.setProfessor(professor);
         schedule.setRoom(room);
         schedule.setGroup(group);

@@ -38,7 +38,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
-        if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
+        if(groupRepository.existsByIdentifierAndIdNot(groupDTO.getIdentifier(),groupDTO.getId())) {
             throw new RuntimeException("Group already exists");
         }
 
@@ -53,7 +53,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void updateGroup(GroupDTO groupDTO) {
 
-        if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
+        if(groupRepository.existsByIdentifierAndIdNot(groupDTO.getIdentifier(),groupDTO.getId())) {
             throw new RuntimeException("You cannot update a group into one that already exists ");
         }
 

@@ -1,6 +1,7 @@
 package com.isteamx.university.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.isteamx.university.enums.Frequency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,10 @@ public class Schedule {
 
     @Column(nullable = false)
     private String endingHour;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
 
     @JoinColumn(name = "professor_id",referencedColumnName = "id", nullable = false)
     @ManyToOne
