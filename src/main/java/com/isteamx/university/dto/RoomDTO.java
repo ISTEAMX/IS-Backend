@@ -18,6 +18,5 @@ public class RoomDTO {
     private int capacity;
     private String type;
     private String location;
-    private List<String> equipment;
-    private List<Schedule> schedule;
+
 }
