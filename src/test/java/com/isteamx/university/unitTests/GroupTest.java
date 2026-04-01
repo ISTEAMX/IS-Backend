@@ -99,7 +99,7 @@ public class GroupTest {
         savedGroupDTO.setIdentifier("group1");
         savedGroupDTO.setSpecialization("TI");
 
-        when(groupRepository.existsByIdentifier(group1.getIdentifier())).thenReturn(false);
+        when(groupRepository.existsByIdentifierAndIdNot(group1.getIdentifier(),group1.getId())).thenReturn(false);
         when(groupDTOMapper.toEntity(group1)).thenReturn(mappedGroup);
         when(groupRepository.save(mappedGroup)).thenReturn(savedGroup);
         when(groupDTOMapper.toDTO(savedGroup)).thenReturn(savedGroupDTO);

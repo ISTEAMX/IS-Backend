@@ -39,6 +39,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         Subject subject = subjectRepository.findById(createScheduleRequestDTO.subjectId()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
 
 
+        if(scheduleRepository.existsByGroupAndStartingHourAndScheduleDayAndFrequency(group, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
+            throw new ResourceNotFoundException("This group already has a subject at that specific hour");
+        }
+
+        if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(professor, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
+            throw new ResourceNotFoundException("This professor already has a subject at that specific hour");
+        }
+
 
         List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour());
 
@@ -47,12 +55,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         for(Schedule schedule : existingSchedules){
             Frequency existingFrequency = schedule.getFrequency();
 
-            if(existingFrequency == Frequency.SAPTAMANAL && newFrequency == Frequency.SAPTAMANAL){
-                throw new IllegalStateException("The Room was already occupied");
+            if (existingFrequency == Frequency.SAPTAMANAL || newFrequency == Frequency.SAPTAMANAL) {
+                throw new ResourceNotFoundException("The Room was already occupied");
             }
 
             if(existingFrequency == newFrequency){
-                throw new IllegalStateException("The Room was already occupied");
+                throw new ResourceNotFoundException("The Room was already occupied");
             }
 
         }
