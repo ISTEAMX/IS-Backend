@@ -26,8 +26,8 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomDTO createRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByName(roomDTO.getName())){
-            throw new ResourceNotFoundException("Room with name " + roomDTO.getName() + " already exists");
+        if(roomRepository.existsByName(roomDTO.getName()) || roomRepository.existsByLocation(roomDTO.getLocation())){
+            throw new ResourceNotFoundException("Room with name already exists");
         }
 
         Room room = new Room();
@@ -60,6 +60,11 @@ public class RoomServiceImpl implements RoomService {
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void updateRoom(RoomDTO roomDTO) {
+
+        if(roomRepository.existsByLocation(roomDTO.getLocation()) || roomRepository.existsByName(roomDTO.getName())){
+            throw new ResourceNotFoundException("Sorry you can't update the room into one that already exists");
+        }
+
         Room room = roomRepository.findById(roomDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Room not found"));
         room.setName(roomDTO.getName());
         room.setCapacity(roomDTO.getCapacity());
