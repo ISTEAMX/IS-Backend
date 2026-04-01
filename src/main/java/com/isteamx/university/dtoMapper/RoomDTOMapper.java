@@ -13,6 +13,7 @@ public class RoomDTOMapper {
             Room room = new Room();
             room.setId(n.getId());
             room.setName(n.getName());
+            room.setCapacity(n.getCapacity());
             room.setType(n.getType());
             room.setLocation(n.getLocation());
 
@@ -25,6 +26,7 @@ public class RoomDTOMapper {
         return Optional.ofNullable(room).map(e -> {
             RoomDTO roomDTO = new RoomDTO();
             roomDTO.setId(e.getId());
+            roomDTO.setCapacity(e.getCapacity());
             roomDTO.setName(e.getName());
             roomDTO.setType(e.getType());
             roomDTO.setLocation(e.getLocation());
