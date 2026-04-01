@@ -1,4 +1,6 @@
 package com.isteamx.university.dto;
 
-public record CreateScheduleRequestDTO(String scheduleDay, String startingHour, String endingHour,long professorId,long subjectId,long groupId,long roomId) {
+import com.isteamx.university.enums.Frequency;
+
+public record CreateScheduleRequestDTO(String scheduleDay, String startingHour, String endingHour, Frequency frequency, long professorId, long subjectId, long groupId, long roomId) {
 }

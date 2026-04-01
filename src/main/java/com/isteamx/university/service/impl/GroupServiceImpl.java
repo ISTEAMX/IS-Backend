@@ -23,7 +23,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO getGroup(Long id) {
-        Group group = groupRepository.findById(id).orElseThrow(()->new RuntimeException("Group not found"));
+        Group group = groupRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Group not found"));
         return groupDTOMapper.toDTO(group);
     }
 
@@ -39,12 +39,11 @@ public class GroupServiceImpl implements GroupService {
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
         if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
-            throw new RuntimeException("Group already exists");
+            throw new ResourceNotFoundException("Group already exists");
         }
 
         Group group = groupDTOMapper.toEntity(groupDTO);
         Group savedGroup= groupRepository.save(group);
-
         return groupDTOMapper.toDTO(savedGroup);
     }
 
@@ -53,11 +52,11 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void updateGroup(GroupDTO groupDTO) {
 
-        if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
-            throw new RuntimeException("You cannot update a group into one that already exists ");
+        if(groupRepository.existsByIdentifierAndIdNot(groupDTO.getIdentifier(),groupDTO.getId())) {
+            throw new ResourceNotFoundException("You cannot update a group into one that already exists ");
         }
 
-        Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new RuntimeException("Group not found"));
+        Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Group not found"));
 
         group.setIdentifier(groupDTO.getIdentifier());
         group.setSpecialization(groupDTO.getSpecialization());
