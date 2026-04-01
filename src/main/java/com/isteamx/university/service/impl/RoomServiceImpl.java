@@ -26,7 +26,7 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomDTO createRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByName(roomDTO.getName()) || roomRepository.existsByLocation(roomDTO.getLocation())){
+        if(roomRepository.existsByNameOrLocation(roomDTO.getName(),roomDTO.getLocation())){
             throw new ResourceNotFoundException("Room with name already exists");
         }
 
@@ -61,7 +61,7 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void updateRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByLocation(roomDTO.getLocation()) || roomRepository.existsByName(roomDTO.getName())){
+        if(roomRepository.existsByNameOrLocationAndIdNot(roomDTO.getLocation(),roomDTO.getName(),roomDTO.getId())){
             throw new ResourceNotFoundException("Sorry you can't update the room into one that already exists");
         }
 
@@ -83,4 +83,6 @@ public class RoomServiceImpl implements RoomService {
 
     roomRepository.deleteById(id);
     }
+
+
 }

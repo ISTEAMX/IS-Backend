@@ -19,7 +19,7 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "schedule_day", nullable = false)
+    @Column(nullable = false)
     private String scheduleDay;
 
     @Column(nullable = false)
