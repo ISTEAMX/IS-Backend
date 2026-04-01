@@ -1,14 +1,10 @@
 package com.isteamx.university.controller;
-
 import com.isteamx.university.dto.RoomDTO;
-import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/room")
@@ -27,20 +23,20 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String,String>> createRoom(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<String> createRoom(@RequestBody RoomDTO roomDTO) {
                 roomService.createRoom(roomDTO);
-        return ResponseEntity.ok(Map.of("message", "Room created"));
+        return ResponseEntity.ok("Room created");
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Map<String,String>> updateRoom(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<String> updateRoom(@RequestBody RoomDTO roomDTO) {
         roomService.updateRoom(roomDTO);
-        return ResponseEntity.ok(Map.of("message", "Room updated"));
+        return ResponseEntity.ok("Room updated");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Map<String,String>> deleteRoom(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
-        return ResponseEntity.ok(Map.of("message", "Room deleted"));
+        return ResponseEntity.ok("Room deleted");
     }
 }

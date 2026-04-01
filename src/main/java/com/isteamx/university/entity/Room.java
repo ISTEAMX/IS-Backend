@@ -33,11 +33,6 @@ public class Room {
     @Column(nullable = false)
     private String location;
 
-    @ElementCollection
-    @CollectionTable(name = "room_equipment",joinColumns = @JoinColumn(name = "room_id"))
-    @Column(nullable = false)
-    private List<String> equipment;
-
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
     private List<Schedule> schedule;
 

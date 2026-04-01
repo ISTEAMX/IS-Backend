@@ -35,8 +35,7 @@ public class RoomServiceImpl implements RoomService {
         room.setCapacity(roomDTO.getCapacity());
         room.setType(roomDTO.getType());
         room.setLocation(roomDTO.getLocation());
-        room.setEquipment(roomDTO.getEquipment());
-        room.setSchedule(roomDTO.getSchedule());
+
 
         Room savedRoom =  roomRepository.save(room);
 
@@ -66,7 +65,6 @@ public class RoomServiceImpl implements RoomService {
         room.setCapacity(roomDTO.getCapacity());
         room.setType(roomDTO.getType());
         room.setLocation(roomDTO.getLocation());
-        room.setSchedule(roomDTO.getSchedule());
         roomRepository.save(room);
 
     }
