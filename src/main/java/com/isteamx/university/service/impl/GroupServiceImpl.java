@@ -52,6 +52,11 @@ public class GroupServiceImpl implements GroupService {
     @Override
     @Transactional
     public void updateGroup(GroupDTO groupDTO) {
+
+        if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
+            throw new RuntimeException("You cannot update a group into one that already exists ");
+        }
+
         Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new RuntimeException("Group not found"));
 
         group.setIdentifier(groupDTO.getIdentifier());
