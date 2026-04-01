@@ -30,7 +30,7 @@ public class Room {
     @Column(nullable = false)
     private String type;
 
-    @Column(nullable = false)
+    @Column(unique = true,nullable = false)
     private String location;
 
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL)
