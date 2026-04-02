@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,22 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final GroupRepository groupRepository;
     private final ScheduleDTOMapper scheduleDTOMapper;
 
+
+    @Override
+    public ScheduleDTO getSchedule(Long id) {
+
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
+        return scheduleDTOMapper.toDTO(schedule);
+    }
+
+    @Override
+    public List<ScheduleDTO> getSchedules() {
+
+        List<Schedule> schedules = scheduleRepository.findAll();
+
+        return schedules.stream().map(scheduleDTOMapper::toDTO).collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -83,6 +100,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
+    @Override
+    @Transactional
     public void updateSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) {
 
         Schedule schedule = scheduleRepository.findById(createScheduleRequestDTO.id()).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
