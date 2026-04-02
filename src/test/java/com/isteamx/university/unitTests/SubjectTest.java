@@ -87,20 +87,24 @@ public class SubjectTest {
         SubjectDTO subjectDTO = new SubjectDTO();
         subjectDTO.setId(1L);
         subjectDTO.setName("test");
+        subjectDTO.setActivityType("lab");
 
         Subject subject = new Subject();
         subject.setId(1L);
         subject.setName("test");
+        subject.setActivityType("lab");
 
         SubjectDTO mappedSubjectDTO = new SubjectDTO();
         mappedSubjectDTO.setId(1L);
         mappedSubjectDTO.setName("test");
+        mappedSubjectDTO.setActivityType("lab");
 
         Subject savedSubject = new Subject();
         savedSubject.setId(1L);
         savedSubject.setName("test");
+        savedSubject.setActivityType("lab");
 
-        when(subjectRepository.existsByName(subjectDTO.getName())).thenReturn(false);
+        when(subjectRepository.existsByNameAndActivityType(subjectDTO.getName(),subjectDTO.getActivityType())).thenReturn(false);
 
         when(subjectDTOMapper.toEntity(subjectDTO)).thenReturn(subject);
         when(subjectRepository.save(any(Subject.class))).thenReturn(savedSubject);

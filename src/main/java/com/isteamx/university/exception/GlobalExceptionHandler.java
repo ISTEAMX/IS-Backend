@@ -26,4 +26,9 @@ public class GlobalExceptionHandler  {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
   }
 
+  @ExceptionHandler(AlreadyExistsException.class)
+  public ResponseEntity<String> handleAlreadyExistsException(AlreadyExistsException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+  }
+
 }

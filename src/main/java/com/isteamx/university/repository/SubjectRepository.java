@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
-    Boolean existsByName(String name);
+     Boolean existsByNameAndActivityType(String name, String activityType);
+     Boolean existsByNameAndActivityTypeAndIdNot(String name, String activityType, Long id);
 }

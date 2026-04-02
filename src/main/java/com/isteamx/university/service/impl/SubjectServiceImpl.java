@@ -3,6 +3,7 @@ package com.isteamx.university.service.impl;
 import com.isteamx.university.dto.SubjectDTO;
 import com.isteamx.university.dtoMapper.SubjectDTOMapper;
 import com.isteamx.university.entity.Subject;
+import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.SubjectRepository;
 import com.isteamx.university.service.SubjectService;
@@ -37,8 +38,8 @@ public class SubjectServiceImpl implements SubjectService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     public SubjectDTO createSubject(SubjectDTO subjectDTO) {
-        if(subjectRepository.existsByName(subjectDTO.getName())){
-            throw new ResourceNotFoundException("Subject already exists");
+        if(subjectRepository.existsByNameAndActivityType(subjectDTO.getName(),subjectDTO.getActivityType())){
+            throw new AlreadyExistsException("Subject already exists");
         }
 
         Subject subject = subjectDTOMapper.toEntity(subjectDTO);
@@ -54,6 +55,10 @@ public class SubjectServiceImpl implements SubjectService {
     public void updateSubject(SubjectDTO subjectDTO) {
 
         Subject subject = subjectRepository.findById(subjectDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+
+        if(subjectRepository.existsByNameAndActivityTypeAndIdNot(subjectDTO.getName(),subjectDTO.getActivityType(),subjectDTO.getId())){
+            throw new AlreadyExistsException("Subject already exists");
+        }
 
         subject.setName(subjectDTO.getName());
         subject.setActivityType(subjectDTO.getActivityType());
