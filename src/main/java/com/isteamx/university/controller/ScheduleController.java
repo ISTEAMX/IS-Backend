@@ -4,9 +4,10 @@ import com.isteamx.university.dto.CreateScheduleRequestDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/schedule")
@@ -14,6 +15,16 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+
+    @GetMapping("/user/{id}")
+    public ScheduleDTO getSchedule(@PathVariable Long id){
+        return scheduleService.getSchedule(id);
+    }
+
+    @GetMapping("/user")
+    public List<ScheduleDTO> getSchedules(){
+        return scheduleService.getSchedules();
+    }
 
     @PostMapping("/add")
     public ScheduleDTO addSchedule(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
