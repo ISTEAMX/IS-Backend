@@ -9,4 +9,6 @@ public interface ScheduleService {
 
     ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO);
 
+    void updateSchedule(CreateScheduleRequestDTO createScheduleRequestDTO);
+
 }

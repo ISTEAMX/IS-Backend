@@ -20,4 +20,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     Boolean existsByGroupAndStartingHourAndScheduleDayAndFrequency(Group group, String startingHour ,String scheduleDay, Frequency frequency);
 
     Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequency(Professor professor, String startingHour, String scheduleDay, Frequency frequency);
+    
+    Boolean existsByGroupAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Group group, String startingHour, String scheduleDay, Frequency frequency, Long id);
+
+    Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Professor professor, String startingHour, String scheduleDay, Frequency frequency, Long id);
 }
