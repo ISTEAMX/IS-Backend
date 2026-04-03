@@ -1,6 +1,7 @@
 package com.isteamx.university.service.impl;
 
 import com.isteamx.university.dto.CreateScheduleRequestDTO;
+import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
@@ -158,6 +159,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
         scheduleRepository.delete(schedule);
+    }
+
+    @Override
+    public List<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO) {
+        List<Schedule> filteredSchedules = scheduleRepository.findSchedulesByDynamicFilters(filterDTO.professorId(),filterDTO.roomId(),filterDTO.groupId(),filterDTO.subjectId(),filterDTO.scheduleDay(),filterDTO.frequency());
+
+        return filteredSchedules.stream().map(scheduleDTOMapper::toDTO).collect(Collectors.toList());
     }
 
 }

@@ -1,6 +1,7 @@
 package com.isteamx.university.service;
 
 import com.isteamx.university.dto.CreateScheduleRequestDTO;
+import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import org.springframework.stereotype.Service;
 
@@ -18,5 +19,7 @@ public interface ScheduleService {
     void updateSchedule(CreateScheduleRequestDTO createScheduleRequestDTO);
 
     void deleteSchedule(Long id);
+
+    List<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO);
 
 }
