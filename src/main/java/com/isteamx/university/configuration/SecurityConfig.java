@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/room/user/**").permitAll()
                         .requestMatchers("/api/group/user/**").permitAll()
                         .requestMatchers("/api/subject/user/**").permitAll()
+                        .requestMatchers("/api/schedule/user/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

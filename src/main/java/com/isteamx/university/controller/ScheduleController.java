@@ -1,6 +1,7 @@
 package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.CreateScheduleRequestDTO;
+import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -37,10 +38,15 @@ public class ScheduleController {
         return ResponseEntity.ok("Schedule updated");
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteSchedule(Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable Long id) {
         scheduleService.deleteSchedule(id);
         return ResponseEntity.ok("Schedule deleted");
+    }
+
+    @GetMapping("/user/filter")
+    public List<ScheduleDTO> getSchedulesByFilters(@RequestBody FilterDTO filterDTO) {
+        return scheduleService.getSchedulesByFilters(filterDTO);
     }
 
 }
