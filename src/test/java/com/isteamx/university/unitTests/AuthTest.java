@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
-
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,6 +40,7 @@ public class AuthTest {
 
     @Test
     public void shouldLogin() {
+
         User user = new User();
         user.setFirstName("test");
         user.setLastName("test");
@@ -49,69 +49,49 @@ public class AuthTest {
 
         String token = "Token";
 
-        UserData userData = new UserData();
-        userData.setFirstName("test");
-        userData.setLastName("test");
 
-        ResponseLoginDTO responseLoginDTO = new ResponseLoginDTO();
-        responseLoginDTO.setUserData(userData);
-        responseLoginDTO.setToken(token);
-
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setEmail("test@test.com");
-        loginDTO.setPassword("password");
-
+        UserData userData = new UserData(1L, "test", "test","AMDIN");
+        LoginDTO loginDTO = new LoginDTO("test@test.com", "password");
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
+        when(passwordEncoder.matches(loginDTO.password(), user.getPassword())).thenReturn(true);
 
-        when(passwordEncoder.matches(loginDTO.getPassword(),user.getPassword())).thenReturn(true);
-
-
-        when(jwtUtil.generateToken(loginDTO.getEmail())).thenReturn(token);
+        when(jwtUtil.generateToken(loginDTO.email())).thenReturn(token);
 
         ResponseLoginDTO response = authServiceImpl.login(loginDTO);
 
         assertThat(response).isNotNull();
-        assertThat(response.getToken()).isEqualTo("Token");
-        assertThat(response.getUserData().getFirstName()).isEqualTo("test");
-        assertThat(response.getUserData().getLastName()).isEqualTo("test");
+        assertThat(response.token()).isEqualTo("Token");
+        assertThat(response.userData().firstName()).isEqualTo("test");
+        assertThat(response.userData().lastName()).isEqualTo("test");
     }
 
     @Test
     public void shouldRegister() {
+        ProfessorDTO professor = new ProfessorDTO(1L,"test","test","department");
 
-    UserDTO userDTO = new UserDTO();
-    userDTO.setFirstName("test");
-    userDTO.setLastName("test");
-    userDTO.setEmail("test@test.com");
-    userDTO.setPassword("password");
-    userDTO.setRole("PROFESSOR");
-    ProfessorDTO professor = new ProfessorDTO();
-    professor.setDepartment("department");
-    userDTO.setProfessor(professor);
+        UserDTO userDTO = new UserDTO(1L, "test", "test", "test@test.com", "password", "PROFESSOR", professor);
 
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setEmail("test@test.com");
+        savedUser.setPassword("encodedPassword");
 
-    User savedUser = new User();
-    savedUser.setId(1L);
-    savedUser.setEmail("test@test.com");
-    savedUser.setPassword("encodedPassword");
+        UserDTO expectedResponse = new UserDTO(1L, "test", "test", "test@test.com", null, "PROFESSOR", professor);
 
-    UserDTO expectedResponse = new UserDTO();
-    expectedResponse.setEmail("test@test.com");
+        when(userRepository.findByEmail(userDTO.email())).thenReturn(Optional.empty());
 
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-    when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
-    when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userDTOMapper.toDTO(savedUser)).thenReturn(expectedResponse);
 
-    when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        UserDTO response = authServiceImpl.register(userDTO);
 
-    when(userDTOMapper.toDTO(savedUser)).thenReturn(expectedResponse);
-
-    UserDTO response = authServiceImpl.register(userDTO);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getEmail()).isEqualTo("test@test.com");
+        assertThat(response).isNotNull();
+        // Atenție: email() în loc de getEmail()
+        assertThat(response.email()).isEqualTo("test@test.com");
     }
 }

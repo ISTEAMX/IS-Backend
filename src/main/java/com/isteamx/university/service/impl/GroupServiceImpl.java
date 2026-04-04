@@ -38,7 +38,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
-        if(groupRepository.existsByIdentifier(groupDTO.getIdentifier())) {
+        if(groupRepository.existsByIdentifier(groupDTO.identifier())) {
             throw new ResourceNotFoundException("Group already exists");
         }
 
@@ -52,15 +52,15 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     public void updateGroup(GroupDTO groupDTO) {
 
-        if(groupRepository.existsByIdentifierAndIdNot(groupDTO.getIdentifier(),groupDTO.getId())) {
+        if(groupRepository.existsByIdentifierAndIdNot(groupDTO.identifier(),groupDTO.id())) {
             throw new ResourceNotFoundException("You cannot update a group into one that already exists ");
         }
 
-        Group group = groupRepository.findById(groupDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Group not found"));
+        Group group = groupRepository.findById(groupDTO.id()).orElseThrow(()->new ResourceNotFoundException("Group not found"));
 
-        group.setIdentifier(groupDTO.getIdentifier());
-        group.setSpecialization(groupDTO.getSpecialization());
-        group.setYear(groupDTO.getYear());
+        group.setIdentifier(groupDTO.identifier());
+        group.setSpecialization(groupDTO.specialization());
+        group.setYear(groupDTO.year());
         groupRepository.save(group);
     }
 

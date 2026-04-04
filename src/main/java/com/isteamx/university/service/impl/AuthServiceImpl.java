@@ -30,8 +30,8 @@ public class AuthServiceImpl implements AuthService {
 
 
 
-        String email = loginDTO.getEmail();
-        String password = loginDTO.getPassword();
+        String email = loginDTO.email();
+        String password = loginDTO.password();
 
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Sorry this email is not registered"));
 
@@ -39,18 +39,12 @@ public class AuthServiceImpl implements AuthService {
             throw new UserUnauthorizedException("Incorrect password");
         }
 
-        UserData userData = new UserData();
-        userData.setId(user.getId());
-        userData.setFirstName(user.getFirstName());
-        userData.setLastName(user.getLastName());
-        userData.setRole(user.getRole());
+        UserData userData = new UserData(user.getId(),user.getFirstName(),user.getLastName(),user.getRole());
 
-        ResponseLoginDTO responseLoginDTO = new ResponseLoginDTO();
-        responseLoginDTO.setUserData(userData);
-        responseLoginDTO.setToken(jwtUtil.generateToken(loginDTO.getEmail()));
+         String token = jwtUtil.generateToken(loginDTO.email());
 
+        return new ResponseLoginDTO(token,userData);
 
-        return responseLoginDTO;
     }
 
 
@@ -59,21 +53,21 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public UserDTO register( UserDTO userDTO) {
 
-        if(userRepository.findByEmail(userDTO.getEmail()).isPresent()){
+        if(userRepository.findByEmail(userDTO.email()).isPresent()){
             throw new RuntimeException("User already exists");
         }
 
         User user = new User();
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setRole(userDTO.getRole());
+        user.setFirstName(userDTO.firstName());
+        user.setLastName(userDTO.lastName());
+        user.setEmail(userDTO.email());
+        user.setPassword(passwordEncoder.encode(userDTO.password()));
+        user.setRole(userDTO.role());
 
-        Professor professor = new Professor();
-        professor.setFirstName(userDTO.getFirstName());
-        professor.setLastName(userDTO.getLastName());
-        professor.setDepartment(userDTO.getProfessor().getDepartment());
+        Professor professor = new Professor(userDTO.id(),userDTO.firstName(),userDTO.lastName(),userDTO.professor().department(),user,null);
+        professor.setFirstName(userDTO.firstName());
+        professor.setLastName(userDTO.lastName());
+        professor.setDepartment(userDTO.professor().department());
         professor.setUser(user);
         user.setProfessor(professor);
 

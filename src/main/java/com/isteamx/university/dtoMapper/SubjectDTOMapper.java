@@ -12,24 +12,18 @@ public class SubjectDTOMapper {
     public Subject toEntity(SubjectDTO subjectDTO){
         return Optional.ofNullable(subjectDTO).map(d -> {
             Subject subject = new Subject();
-            subject.setId(d.getId());
-            subject.setName(d.getName());
-            subject.setActivityType(d.getActivityType());
+            subject.setId(d.id());
+            subject.setName(d.name());
+            subject.setActivityType(d.activityType());
 
             return subject;
         }).orElse(null);
     }
 
     public SubjectDTO toDTO(Subject subject){
-        return Optional.ofNullable(subject).map(e -> {
-            SubjectDTO subjectDTO = new SubjectDTO();
-            subjectDTO.setId(e.getId());
-            subjectDTO.setName(e.getName());
-            subjectDTO.setActivityType(e.getActivityType());
-
-
-            return subjectDTO;
-        }).orElse(null);
+        return Optional.ofNullable(subject).map(e ->
+                new SubjectDTO(e.getId(),e.getName(),e.getActivityType())
+        ).orElse(null);
     }
 
 }

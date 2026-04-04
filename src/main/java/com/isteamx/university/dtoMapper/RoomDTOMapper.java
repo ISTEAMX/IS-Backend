@@ -11,11 +11,11 @@ public class RoomDTOMapper {
     public Room toEntity(RoomDTO roomDTO) {
         return Optional.ofNullable(roomDTO).map(n -> {
             Room room = new Room();
-            room.setId(n.getId());
-            room.setName(n.getName());
-            room.setCapacity(n.getCapacity());
-            room.setType(n.getType());
-            room.setLocation(n.getLocation());
+            room.setId(n.id());
+            room.setName(n.name());
+            room.setCapacity(n.capacity());
+            room.setType(n.type());
+            room.setLocation(n.location());
 
             return room;
 
@@ -23,15 +23,12 @@ public class RoomDTOMapper {
     }
 
     public RoomDTO toDTO(Room room) {
-        return Optional.ofNullable(room).map(e -> {
-            RoomDTO roomDTO = new RoomDTO();
-            roomDTO.setId(e.getId());
-            roomDTO.setCapacity(e.getCapacity());
-            roomDTO.setName(e.getName());
-            roomDTO.setType(e.getType());
-            roomDTO.setLocation(e.getLocation());
-
-            return roomDTO;
-        }).orElse(null);
+        return Optional.ofNullable(room).map(e -> new RoomDTO(
+        e.getId(),
+        e.getName(),
+        e.getCapacity(),
+        e.getType(),
+        e.getLocation()
+        )).orElse(null);
     }
 }
