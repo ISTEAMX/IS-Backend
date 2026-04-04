@@ -38,7 +38,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Transactional
     @PreAuthorize("hasAuthority('ADMIN')")
     public SubjectDTO createSubject(SubjectDTO subjectDTO) {
-        if(subjectRepository.existsByNameAndActivityType(subjectDTO.getName(),subjectDTO.getActivityType())){
+        if(subjectRepository.existsByNameAndActivityType(subjectDTO.name(),subjectDTO.activityType())){
             throw new AlreadyExistsException("Subject already exists");
         }
 
@@ -54,14 +54,14 @@ public class SubjectServiceImpl implements SubjectService {
     @PreAuthorize("hasAuthority('ADMIN')")
     public void updateSubject(SubjectDTO subjectDTO) {
 
-        Subject subject = subjectRepository.findById(subjectDTO.getId()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
+        Subject subject = subjectRepository.findById(subjectDTO.id()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
 
-        if(subjectRepository.existsByNameAndActivityTypeAndIdNot(subjectDTO.getName(),subjectDTO.getActivityType(),subjectDTO.getId())){
+        if(subjectRepository.existsByNameAndActivityTypeAndIdNot(subjectDTO.name(),subjectDTO.activityType(),subjectDTO.id())){
             throw new AlreadyExistsException("Subject already exists");
         }
 
-        subject.setName(subjectDTO.getName());
-        subject.setActivityType(subjectDTO.getActivityType());
+        subject.setName(subjectDTO.name());
+        subject.setActivityType(subjectDTO.activityType());
         subjectRepository.save(subject);
 
     }

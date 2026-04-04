@@ -1,16 +1,5 @@
 package com.isteamx.university.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public record LoginDTO(String email, String password) {
 
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class LoginDTO {
-    public String email;
-    public String password;
 }

@@ -13,31 +13,26 @@ public class UserDTOMapper {
     public final ProfessorDTOMapper professorDTOMapper;
 
     public UserDTO toDTO(User entity) {
-
-        return Optional.ofNullable(entity).map(e -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setEmail(e.getEmail());
-            userDTO.setFirstName(e.getFirstName());
-            userDTO.setLastName(e.getLastName());
-            userDTO.setPassword(e.getPassword());
-            userDTO.setRole(e.getRole());
-            userDTO.setProfessor(Optional.ofNullable(e.getProfessor()).map(professorDTOMapper::toDTO).orElse(null));
-
-            return userDTO;
-
-        }).orElse(null);
-
+        return Optional.ofNullable(entity).map(e -> new UserDTO(
+                e.getId(),
+                e.getEmail(),
+                e.getFirstName(),
+                e.getLastName(),
+                e.getPassword(),
+                e.getRole(),
+                Optional.ofNullable(e.getProfessor()).map(professorDTOMapper::toDTO).orElse(null)
+        )).orElse(null);
     }
 
     public User toEntity(UserDTO dto) {
         return Optional.ofNullable(dto).map( d -> {
             User user = new User();
-            user.setEmail(d.getEmail());
-            user.setFirstName(d.getFirstName());
-            user.setLastName(d.getLastName());
-            user.setPassword(d.getPassword());
-            user.setRole(d.getRole());
-            user.setProfessor(Optional.ofNullable(d.getProfessor()).map( professorDTOMapper::toEntity).orElse(null));
+            user.setEmail(d.email());
+            user.setFirstName(d.firstName());
+            user.setLastName(d.lastName());
+            user.setPassword(d.password());
+            user.setRole(d.role());
+            user.setProfessor(Optional.ofNullable(d.professor()).map( professorDTOMapper::toEntity).orElse(null));
 
             return user;
 

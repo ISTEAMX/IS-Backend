@@ -30,15 +30,11 @@ public class SubjectTest {
     @InjectMocks
     private SubjectServiceImpl subjectService;
 
-
     @Test
-    public void shouldGetSubjectById(){
-        Long id =1L;
+    public void shouldGetSubjectById() {
+        Long id = 1L;
 
-
-        SubjectDTO subjectDTO = new SubjectDTO();
-        subjectDTO.setId(1L);
-        subjectDTO.setName("test");
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
         Subject subject = new Subject();
         subject.setId(1L);
@@ -50,11 +46,11 @@ public class SubjectTest {
         SubjectDTO resp = subjectService.getSubjectById(id);
 
         assertThat(resp).isNotNull();
-        assertThat(resp.getId()).isEqualTo(subjectDTO.getId());
-
+        assertThat(resp.id()).isEqualTo(subjectDTO.id());
     }
+
     @Test
-    public void shouldGetAllSubjects(){
+    public void shouldGetAllSubjects() {
         Subject subject1 = new Subject();
         subject1.setId(1L);
         subject1.setName("test");
@@ -65,13 +61,8 @@ public class SubjectTest {
 
         List<Subject> list = List.of(subject1, subject2);
 
-        SubjectDTO subjectDTO1 = new SubjectDTO();
-        subjectDTO1.setId(1L);
-        subjectDTO1.setName("test");
-
-        SubjectDTO subjectDTO2 = new SubjectDTO();
-        subjectDTO2.setId(2L);
-        subjectDTO2.setName("test2");
+        SubjectDTO subjectDTO1 = new SubjectDTO(1L, "test", "Lab");
+        SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test2", "Lab");
 
         when(subjectRepository.findAll()).thenReturn(list);
         when(subjectDTOMapper.toDTO(subject1)).thenReturn(subjectDTO1);
@@ -82,30 +73,24 @@ public class SubjectTest {
         assertThat(resp).isNotNull();
         assertThat(resp.size()).isEqualTo(2);
     }
+
     @Test
-    public void shouldCreateSubject(){
-        SubjectDTO subjectDTO = new SubjectDTO();
-        subjectDTO.setId(1L);
-        subjectDTO.setName("test");
-        subjectDTO.setActivityType("lab");
+    public void shouldCreateSubject() {
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "lab");
 
         Subject subject = new Subject();
         subject.setId(1L);
         subject.setName("test");
         subject.setActivityType("lab");
 
-        SubjectDTO mappedSubjectDTO = new SubjectDTO();
-        mappedSubjectDTO.setId(1L);
-        mappedSubjectDTO.setName("test");
-        mappedSubjectDTO.setActivityType("lab");
+        SubjectDTO mappedSubjectDTO = new SubjectDTO(1L, "test", "lab");
 
         Subject savedSubject = new Subject();
         savedSubject.setId(1L);
         savedSubject.setName("test");
         savedSubject.setActivityType("lab");
 
-        when(subjectRepository.existsByNameAndActivityType(subjectDTO.getName(),subjectDTO.getActivityType())).thenReturn(false);
-
+        when(subjectRepository.existsByNameAndActivityType(subjectDTO.name(), subjectDTO.activityType())).thenReturn(false);
         when(subjectDTOMapper.toEntity(subjectDTO)).thenReturn(subject);
         when(subjectRepository.save(any(Subject.class))).thenReturn(savedSubject);
         when(subjectDTOMapper.toDTO(savedSubject)).thenReturn(mappedSubjectDTO);
@@ -113,7 +98,6 @@ public class SubjectTest {
         SubjectDTO resp = subjectService.createSubject(subjectDTO);
 
         assertThat(resp).isNotNull();
-        assertThat(resp.getId()).isEqualTo(subjectDTO.getId());
-
+        assertThat(resp.id()).isEqualTo(subjectDTO.id());
     }
 }

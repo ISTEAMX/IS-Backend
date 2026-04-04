@@ -28,30 +28,25 @@ public class RoomUnitTest {
     private RoomDTOMapper roomDTOMapper;
 
     @InjectMocks()
-    private  RoomServiceImpl roomService;
-
+    private RoomServiceImpl roomService;
 
     @Test
     public void shouldCreateRoom() {
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setId(1L);
-        roomDTO.setCapacity(10);
+        RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
         Room savedRoom = new Room();
         savedRoom.setId(1L);
         savedRoom.setCapacity(10);
 
-        RoomDTO savedRoomDTO = new RoomDTO();
-        savedRoomDTO.setId(1L);
-        savedRoomDTO.setCapacity(10);
+        RoomDTO savedRoomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
         when(roomRepository.save(any(Room.class))).thenReturn(savedRoom);
         when(roomDTOMapper.toDTO(savedRoom)).thenReturn(savedRoomDTO);
 
         RoomDTO createdRoomDTO = roomService.createRoom(roomDTO);
 
-        assertThat(createdRoomDTO.getId()).isNotNull();
-        assertThat(createdRoomDTO.getId()).isEqualTo(1L);
+        assertThat(createdRoomDTO.id()).isNotNull();
+        assertThat(createdRoomDTO.id()).isEqualTo(1L);
     }
 
     @Test
@@ -62,9 +57,7 @@ public class RoomUnitTest {
         room.setId(id);
         room.setCapacity(10);
 
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setId(1L);
-        roomDTO.setCapacity(10);
+        RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
         when(roomRepository.findById(id)).thenReturn(Optional.of(room));
         when(roomDTOMapper.toDTO(room)).thenReturn(roomDTO);
@@ -72,27 +65,22 @@ public class RoomUnitTest {
         RoomDTO createdRoomDTO = roomService.getRoom(id);
 
         assertThat(createdRoomDTO).isNotNull();
-        assertThat(createdRoomDTO.getId()).isEqualTo(roomDTO.getId());
-
+        assertThat(createdRoomDTO.id()).isEqualTo(roomDTO.id());
     }
 
     @Test
     public void shouldGetAllRooms() {
-
         Room room1 = new Room();
         room1.setId(1L);
 
-        RoomDTO roomDTO1 = new RoomDTO();
-        roomDTO1.setId(1L);
+        RoomDTO roomDTO1 = new RoomDTO(1L, "T204",60,"Lab","T");
 
         Room room2 = new Room();
         room2.setId(2L);
 
-        RoomDTO roomDTO2 = new RoomDTO();
-        roomDTO2.setId(2L);
+        RoomDTO roomDTO2 = new RoomDTO(2L, "T205",60,"Lab","T");
 
         List<Room> rooms = List.of(room1, room2);
-
 
         when(roomRepository.findAll()).thenReturn(rooms);
         when(roomDTOMapper.toDTO(room1)).thenReturn(roomDTO1);
@@ -102,11 +90,7 @@ public class RoomUnitTest {
 
         assertThat(response).isNotNull();
         assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).getId()).isEqualTo(1L);
-        assertThat(response.get(1).getId()).isEqualTo(2L);
-
-
+        assertThat(response.get(0).id()).isEqualTo(1L);
+        assertThat(response.get(1).id()).isEqualTo(2L);
     }
-
-
 }

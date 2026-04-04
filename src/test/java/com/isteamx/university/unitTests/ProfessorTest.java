@@ -37,9 +37,7 @@ public class ProfessorTest {
         professor.setId(id);
         professor.setFirstName("test");
 
-        ProfessorDTO professorDTO = new ProfessorDTO();
-        professorDTO.setId(id);
-        professorDTO.setFirstName("test");
+        ProfessorDTO professorDTO = new ProfessorDTO(id, "test", null, null);
 
         when(professorRepository.findById(id)).thenReturn(Optional.of(professor));
         when(professorDTOMapper.toDTO(professor)).thenReturn(professorDTO);
@@ -47,12 +45,11 @@ public class ProfessorTest {
         ProfessorDTO response = professorService.getProfessor(id);
 
         assertThat(response).isNotNull();
-        assertThat(response.getId()).isEqualTo(professorDTO.getId());
+        assertThat(response.id()).isEqualTo(professorDTO.id());
     }
 
     @Test
     public void shouldGetAllProfessors() {
-
         Professor prof1 = new Professor();
         prof1.setId(1L);
         prof1.setFirstName("Lukas");
@@ -63,13 +60,8 @@ public class ProfessorTest {
 
         List<Professor> mockProfessors = List.of(prof1, prof2);
 
-        ProfessorDTO dto1 = new ProfessorDTO();
-        dto1.setId(1L);
-        dto1.setFirstName("Lukas");
-
-        ProfessorDTO dto2 = new ProfessorDTO();
-        dto2.setId(2L);
-        dto2.setFirstName("Zozo");
+        ProfessorDTO dto1 = new ProfessorDTO(1L, "Lukas", null, null);
+        ProfessorDTO dto2 = new ProfessorDTO(2L, "Zozo", null, null);
 
         when(professorRepository.findAll()).thenReturn(mockProfessors);
         when(professorDTOMapper.toDTO(prof1)).thenReturn(dto1);
@@ -79,8 +71,7 @@ public class ProfessorTest {
 
         assertThat(response).isNotNull();
         assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).getFirstName()).isEqualTo("Lukas");
-        assertThat(response.get(1).getFirstName()).isEqualTo("Zozo");
-
+        assertThat(response.get(0).firstName()).isEqualTo("Lukas");
+        assertThat(response.get(1).firstName()).isEqualTo("Zozo");
     }
 }

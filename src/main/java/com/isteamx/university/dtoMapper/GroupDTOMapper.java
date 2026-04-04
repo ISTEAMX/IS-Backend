@@ -17,10 +17,10 @@ public class GroupDTOMapper {
     }
         public Group toEntity(GroupDTO groupDTO) {
         return new Group(
-                groupDTO.getId(),
-                groupDTO.getIdentifier(),
-                groupDTO.getSpecialization(),
-                groupDTO.getYear(),
+                groupDTO.id(),
+                groupDTO.identifier(),
+                groupDTO.specialization(),
+                groupDTO.year(),
                 null
         );
         }

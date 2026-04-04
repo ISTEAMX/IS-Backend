@@ -48,17 +48,17 @@ public class ScheduleTest {
 
     @Test
     public void shouldGetScheduleById() {
-        ProfessorDTO professorDTO = new ProfessorDTO();
-        professorDTO.setId(1L);
+        ProfessorDTO professorDTO = new ProfessorDTO(1L, "test", "test", "test");
 
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setId(1L);
 
-        GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setId(1L);
+        RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
-        SubjectDTO subjectDTO = new SubjectDTO();
-        subjectDTO.setId(1L);
+
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3);
+
+
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
+
 
         ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,groupDTO,subjectDTO);
         Schedule schedule = new Schedule();
@@ -77,29 +77,17 @@ public class ScheduleTest {
 
     @Test
     public void shouldGetAllSchedules() {
-        ProfessorDTO professorDTO = new ProfessorDTO();
-        professorDTO.setId(1L);
 
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setId(1L);
 
-        GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setId(1L);
+        ProfessorDTO professorDTO = new ProfessorDTO(1L, "test", "test", "test");
+        RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3);
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
-        SubjectDTO subjectDTO = new SubjectDTO();
-        subjectDTO.setId(1L);
-
-        ProfessorDTO professorDTO2 = new ProfessorDTO();
-        professorDTO2.setId(2L);
-
-        RoomDTO roomDTO2 = new RoomDTO();
-        roomDTO2.setId(2L);
-
-        GroupDTO groupDTO2 = new GroupDTO();
-        groupDTO2.setId(2L);
-
-        SubjectDTO subjectDTO2 = new SubjectDTO();
-        subjectDTO2.setId(2L);
+        ProfessorDTO professorDTO2 = new ProfessorDTO(2L, "test", "test", "test");
+        RoomDTO roomDTO2 = new RoomDTO(2L, "T204",60,"Lab","T");
+        GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3);
+        SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test", "Lab");
 
         ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,groupDTO,subjectDTO);
         ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,professorDTO2 ,roomDTO2,groupDTO2,subjectDTO2);
@@ -138,7 +126,11 @@ public class ScheduleTest {
 
         ScheduleDTO expectedResponse = new ScheduleDTO(
                 100L, "Monday", "08:00", "10:00", Frequency.PARA,
-                new ProfessorDTO(), new RoomDTO(), new GroupDTO(), new SubjectDTO());
+                new ProfessorDTO(1L, "test", "test", "test"),
+                new RoomDTO(1L, "T204",60,"Lab","T"),
+                new GroupDTO(1L, "group1", "TI",3),
+                new SubjectDTO(1L, "test", "Lab")
+        );
 
         when(professorRepository.findById(1L)).thenReturn(Optional.of(professor));
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));

@@ -26,15 +26,15 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     public RoomDTO createRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByNameOrLocation(roomDTO.getName(),roomDTO.getLocation())){
+        if(roomRepository.existsByNameOrLocation(roomDTO.name(),roomDTO.location())){
             throw new ResourceNotFoundException("Room with name already exists");
         }
 
         Room room = new Room();
-        room.setName(roomDTO.getName());
-        room.setCapacity(roomDTO.getCapacity());
-        room.setType(roomDTO.getType());
-        room.setLocation(roomDTO.getLocation());
+        room.setName(roomDTO.name());
+        room.setCapacity(roomDTO.capacity());
+        room.setType(roomDTO.type());
+        room.setLocation(roomDTO.location());
 
 
         Room savedRoom =  roomRepository.save(room);
@@ -61,15 +61,15 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void updateRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByNameOrLocationAndIdNot(roomDTO.getLocation(),roomDTO.getName(),roomDTO.getId())){
+        if(roomRepository.existsByNameOrLocationAndIdNot(roomDTO.location(),roomDTO.name(),roomDTO.id())){
             throw new ResourceNotFoundException("Sorry you can't update the room into one that already exists");
         }
 
-        Room room = roomRepository.findById(roomDTO.getId()).orElseThrow(()->new ResourceNotFoundException("Room not found"));
-        room.setName(roomDTO.getName());
-        room.setCapacity(roomDTO.getCapacity());
-        room.setType(roomDTO.getType());
-        room.setLocation(roomDTO.getLocation());
+        Room room = roomRepository.findById(roomDTO.id()).orElseThrow(()->new ResourceNotFoundException("Room not found"));
+        room.setName(roomDTO.name());
+        room.setCapacity(roomDTO.capacity());
+        room.setType(roomDTO.type());
+        room.setLocation(roomDTO.location());
         roomRepository.save(room);
 
     }

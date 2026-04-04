@@ -36,12 +36,12 @@ public class ProfessorServiceImpl implements ProfessorService {
     @PreAuthorize("hasAuthority('ADMIN')")
     public void updateProfessor(ProfessorDTO professorDTO) {
 
-        Professor professor = professorRepository.findById(professorDTO.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorDTO.getId() + " does not exist"));
+        Professor professor = professorRepository.findById(professorDTO.id())
+                .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorDTO.id() + " does not exist"));
 
-        professor.setFirstName(professorDTO.getFirstName());
-        professor.setLastName(professorDTO.getLastName());
-        professor.setDepartment(professorDTO.getDepartment());
+        professor.setFirstName(professorDTO.firstName());
+        professor.setLastName(professorDTO.firstName());
+        professor.setDepartment(professorDTO.department());
 
         Professor savedProfessor = professorRepository.save(professor);
 
