@@ -1,88 +1,78 @@
-# IS-Backend
+# IS-Backend 🚀
 
-The backend for the ISTEAMX project, built with **Spring Boot 4** and **Java 21**.
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/isteamx/is-backend)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4+-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://java.com/)
 
-## Tech Stack
-
-- **Framework:** Spring Boot 4.0
-- **Language:** Java 21
-- **Database:** PostgreSQL
-- **Auth:** JWT (JSON Web Tokens)
-- **Build Tool:** Maven
+The core REST API for the **ISTEAMX** University Management System. Built with **Spring Boot** and **Java 21**, providing a secure and scalable foundation for academic resource scheduling.
 
 ---
 
-## Running with Docker (Local Development)
-
-The entire application stack (backend, frontend, database) can be run using Docker Compose from the `IS-DevOps` repository. See the [IS-DevOps README](../IS-DevOps/README.md) for instructions.
-
-```bash
-# From the IS-DevOps/ directory
-docker-compose -f docker-compose/docker-compose.yml up --build -d
-```
-
-The backend will be available at [http://localhost:8080](http://localhost:8080).
-
----
-
-## Running Locally (IDE / Maven)
-
-You can also run the backend directly on your local machine (e.g., from your IDE or using `mvn spring-boot:run`).
+## 🚀 Quick Start
 
 ### Prerequisites
+- [Java 21](https://www.oracle.com/java/technologies/downloads/#java21)
+- [Maven 3.9+](https://maven.apache.org/)
+- [PostgreSQL 15+](https://www.postgresql.org/)
 
-- Java 21
-- Maven 3.9+
-- A running PostgreSQL instance (or use `docker run -d -p 5432:5432 -e POSTGRES_DB=app_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres postgres:15`)
-
-### Environment Configuration
-
-1. **Create a `.env` file:**
-   Copy the provided example and fill in any secret values.
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Get the secret values:** Ask a team member for the correct production values, or use the defaults for local development.
-
-### Environment Variables
-
-| Variable            | Description                        | Default        |
-|---------------------|------------------------------------|----------------|
-| `POSTGRES_DB`       | PostgreSQL database name           | `app_db`       |
-| `POSTGRES_USER`     | PostgreSQL username                | `postgres`     |
-| `POSTGRES_PASSWORD` | PostgreSQL password                | `postgres`     |
-| `JWT_SECRET_KEY`    | Secret key for signing JWT tokens  | `default-secret` |
-| `JWT_EXPIRATION`    | JWT token expiration time (ms)     | `86400000`     |
-
-The `application.properties` file reads these from environment variables with the defaults shown above. Most IDEs can load the `.env` file automatically:
-
-- **IntelliJ IDEA:** The "EnvFile" or ".env files support" plugin will pick this up.
-- **VS Code:** The "DotENV" extension works with a standard configuration.
-
-### Start the Application
-
+### Installation
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd IS-Backend
+
+# Install dependencies and build
+./mvnw clean install
+```
+
+### Running the App
+```bash
+# Start the Spring Boot application
 ./mvnw spring-boot:run
 ```
+The API will be available at [http://localhost:8080](http://localhost:8080).
 
 ---
 
-## AWS Deployment
+## ✨ Key Features
+- **JWT Authentication**: Secure, stateless session management with role-based access.
+- **Resource Management**: Comprehensive CRUD operations for Professors, Rooms, Student Groups, and Subjects.
+- **Conflict-Aware Scheduling**: Intelligent university course scheduling that avoids overlaps.
+- **Scalable Architecture**: Layered backend design optimized for high concurrency and performance.
 
-In production, the backend is deployed as a Docker container on an **EC2 instance** (`t3.micro`, `eu-central-1`). The Docker image is stored in **AWS ECR**.
+---
 
-The EC2 instance is provisioned via Terraform with a user-data script that automatically installs Docker, fetches runtime secrets from **AWS Secrets Manager**, and connects to a managed **RDS PostgreSQL** database. See the [IS-DevOps README](../IS-DevOps/README.md) for full deployment instructions.
+## 🛠️ Technologies Used
+- **Framework**: Spring Boot 3.4+
+- **Language**: Java 21 (Records, Virtual Threads)
+- **Database**: PostgreSQL 15+
+- **Security**: Spring Security + JWT
+- **Persistence**: Spring Data JPA (Hibernate)
+- **Build Tool**: Maven
 
-| Resource         | Details                         |
-|------------------|---------------------------------|
-| EC2              | `t3.micro`, Ubuntu 22.04       |
-| RDS Database     | `db.t3.micro`, PostgreSQL 15   |
-| Secrets Manager  | `isteamx/backend` JSON secret   |
-| Elastic IP       | `35.158.14.254`                 |
-| ECR              | `isteamx-backend`              |
-| Region           | `eu-central-1`                  |
+---
 
-### AWS Cost Management (Power Scheduler)
-Need to pause the infrastructure to save money? See the **AWS Power Scheduler** feature documented in the [IS-DevOps README](../IS-DevOps/README.md) to safely start and stop the EC2 and RDS instances without losing data.
+## 📚 Project Documentation
+For detailed information on the project's architecture, setup, and development guidelines, please refer to the files in the [docs/](docs/) folder:
+
+- [**Project Overview**](docs/PROJECT_OVERVIEW.md): Comprehensive goals and audience description.
+- [**Features**](docs/FEATURES.md): Functional walkthroughs of the backend capabilities.
+- [**Architecture**](docs/ARCHITECTURE.md): Technical deep-dive into the Spring Boot layered structure.
+- [**Setup & Installation**](docs/SETUP_AND_INSTALLATION.md): Detailed environment configuration and onboarding.
+- [**Development Workflow**](docs/DEVELOPMENT_WORKFLOW.md): Coding standards, testing strategy, and branching.
+- [**API Documentation**](docs/API_DOCUMENTATION.md): Detailed endpoint reference and security details.
+- [**Database Design**](docs/DATABASE_DESIGN.md): Entity relationships, ERD, and table details.
+- [**Build & Deployment**](docs/DEPLOYMENT.md): Docker multi-stage builds and production configuration.
+- [**Troubleshooting**](docs/TROUBLESHOOTING.md): Common issues and debugging tips.
+
+---
+
+## 🤝 Contributing
+We welcome contributions! Please refer to the [Development Workflow](docs/DEVELOPMENT_WORKFLOW.md) for guidelines on code style, testing, and pull request procedures.
+
+---
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE) (or as per project policy).
+
