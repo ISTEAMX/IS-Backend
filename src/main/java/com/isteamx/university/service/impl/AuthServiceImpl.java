@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserUnauthorizedException("Incorrect password");
         }
 
-        UserData userData = new UserData(user.getId(),user.getFirstName(),user.getLastName(),user.getRole());
+        UserData userData = new UserData(user.getId(),user.getProfessor().getId(),user.getFirstName(),user.getLastName(),user.getRole());
 
          String token = jwtUtil.generateToken(loginDTO.email());
 

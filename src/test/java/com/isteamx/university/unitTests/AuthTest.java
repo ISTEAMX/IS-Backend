@@ -50,7 +50,7 @@ public class AuthTest {
         String token = "Token";
 
 
-        UserData userData = new UserData(1L, "test", "test","AMDIN");
+        UserData userData = new UserData(1L, 1L,"test", "test","AMDIN");
         LoginDTO loginDTO = new LoginDTO("test@test.com", "password");
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
