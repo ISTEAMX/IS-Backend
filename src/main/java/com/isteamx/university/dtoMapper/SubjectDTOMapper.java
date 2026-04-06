@@ -4,26 +4,30 @@ import com.isteamx.university.dto.SubjectDTO;
 import com.isteamx.university.entity.Subject;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class SubjectDTOMapper {
 
-    public Subject toEntity(SubjectDTO subjectDTO){
-        return Optional.ofNullable(subjectDTO).map(d -> {
-            Subject subject = new Subject();
-            subject.setId(d.id());
-            subject.setName(d.name());
-            subject.setActivityType(d.activityType());
+    public Subject toEntity(SubjectDTO dto) {
+        if (dto == null) {
+            return null;
+        }
 
-            return subject;
-        }).orElse(null);
+        Subject subject = new Subject();
+        subject.setId(dto.id());
+        subject.setName(dto.name());
+        subject.setActivityType(dto.activityType());
+        return subject;
     }
 
-    public SubjectDTO toDTO(Subject subject){
-        return Optional.ofNullable(subject).map(e ->
-                new SubjectDTO(e.getId(),e.getName(),e.getActivityType())
-        ).orElse(null);
-    }
+    public SubjectDTO toDTO(Subject subject) {
+        if (subject == null) {
+            return null;
+        }
 
+        return new SubjectDTO(
+                subject.getId(),
+                subject.getName(),
+                subject.getActivityType()
+        );
+    }
 }

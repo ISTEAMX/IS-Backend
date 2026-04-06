@@ -6,16 +6,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GroupDTOMapper {
+
     public GroupDTO toDTO(Group group) {
+        if (group == null) {
+            return null;
+        }
         return new GroupDTO(
                 group.getId(),
                 group.getIdentifier(),
                 group.getSpecialization(),
                 group.getYear()
         );
-
     }
-        public Group toEntity(GroupDTO groupDTO) {
+
+    public Group toEntity(GroupDTO groupDTO) {
+        if (groupDTO == null) {
+            return null;
+        }
         return new Group(
                 groupDTO.id(),
                 groupDTO.identifier(),
@@ -23,5 +30,5 @@ public class GroupDTOMapper {
                 groupDTO.year(),
                 null
         );
-        }
+    }
 }
