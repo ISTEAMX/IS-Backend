@@ -26,7 +26,7 @@ public class GroupController {
         return groupService.getGroups();
     }
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public GroupDTO createGroup(@RequestBody GroupDTO groupDTO) {
         return groupService.createGroup(groupDTO);
     }

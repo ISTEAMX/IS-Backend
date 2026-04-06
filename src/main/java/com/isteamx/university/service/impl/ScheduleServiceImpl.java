@@ -59,11 +59,11 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
         if(scheduleRepository.existsByGroupAndStartingHourAndScheduleDayAndFrequency(group, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
-            throw new ResourceNotFoundException("This group already has a subject at that specific hour");
+            throw new AlreadyExistsException("This group already has a subject at that specific hour");
         }
 
         if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(professor, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
-            throw new ResourceNotFoundException("This professor already has a subject at that specific hour");
+            throw new AlreadyExistsException("This professor already has a subject at that specific hour");
         }
 
 
@@ -75,7 +75,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             Frequency existingFrequency = schedule.getFrequency();
 
             if (existingFrequency == Frequency.SAPTAMANAL || newFrequency == Frequency.SAPTAMANAL) {
-                throw new ResourceNotFoundException("The Room was already occupied");
+                throw new AlreadyExistsException("The Room was already occupied");
             }
 
             if(existingFrequency == newFrequency){

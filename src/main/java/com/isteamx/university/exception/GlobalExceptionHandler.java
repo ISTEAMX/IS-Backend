@@ -21,6 +21,11 @@ public class GlobalExceptionHandler  {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler(UserUnauthorizedException.class)
+  public ResponseEntity<String> handleUserUnauthorizedException(UserUnauthorizedException ex) {
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+  }
+
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);

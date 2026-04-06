@@ -4,6 +4,7 @@ import com.isteamx.university.dto.*;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
 import com.isteamx.university.entity.Professor;
 import com.isteamx.university.entity.User;
+import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.exception.UserUnauthorizedException;
 import com.isteamx.university.repository.UserRepository;
@@ -54,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
     public UserDTO register( UserDTO userDTO) {
 
         if(userRepository.findByEmail(userDTO.email()).isPresent()){
-            throw new RuntimeException("User already exists");
+            throw new AlreadyExistsException("User already exists");
         }
 
         User user = new User();
@@ -64,10 +65,14 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(userDTO.password()));
         user.setRole(userDTO.role());
 
-        Professor professor = new Professor(userDTO.id(),userDTO.firstName(),userDTO.lastName(),userDTO.professor().department(),user,null);
+        Professor professor = new Professor();
         professor.setFirstName(userDTO.firstName());
         professor.setLastName(userDTO.lastName());
-        professor.setDepartment(userDTO.professor().department());
+        if (userDTO.professor() != null && userDTO.professor().department() != null) {
+            professor.setDepartment(userDTO.professor().department());
+        } else {
+            professor.setDepartment("Default Department");
+        }
         professor.setUser(user);
         user.setProfessor(professor);
 

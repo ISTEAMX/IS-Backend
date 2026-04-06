@@ -1,6 +1,7 @@
 package com.isteamx.university.service.impl;
 
 import com.isteamx.university.dto.RoomDTO;
+import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.dtoMapper.RoomDTOMapper;
 import com.isteamx.university.entity.Room;
 import com.isteamx.university.exception.ResourceNotFoundException;
@@ -27,7 +28,7 @@ public class RoomServiceImpl implements RoomService {
     public RoomDTO createRoom(RoomDTO roomDTO) {
 
         if(roomRepository.existsByNameOrLocation(roomDTO.name(),roomDTO.location())){
-            throw new ResourceNotFoundException("Room with name already exists");
+            throw new AlreadyExistsException("Room with that name or location already exists");
         }
 
         Room room = new Room();
@@ -61,8 +62,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public void updateRoom(RoomDTO roomDTO) {
 
-        if(roomRepository.existsByNameOrLocationAndIdNot(roomDTO.location(),roomDTO.name(),roomDTO.id())){
-            throw new ResourceNotFoundException("Sorry you can't update the room into one that already exists");
+        if(roomRepository.existsByNameOrLocationExcludingId(roomDTO.name(),roomDTO.location(),roomDTO.id())){
+            throw new AlreadyExistsException("Sorry you can't update the room into one that already exists");
         }
 
         Room room = roomRepository.findById(roomDTO.id()).orElseThrow(()->new ResourceNotFoundException("Room not found"));

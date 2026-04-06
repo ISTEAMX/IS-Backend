@@ -1,6 +1,7 @@
 package com.isteamx.university.service.impl;
 
 import com.isteamx.university.dto.GroupDTO;
+import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.dtoMapper.GroupDTOMapper;
 import com.isteamx.university.entity.Group;
 import com.isteamx.university.exception.ResourceNotFoundException;
@@ -39,7 +40,7 @@ public class GroupServiceImpl implements GroupService {
     public GroupDTO createGroup(GroupDTO groupDTO) {
 
         if(groupRepository.existsByIdentifier(groupDTO.identifier())) {
-            throw new ResourceNotFoundException("Group already exists");
+            throw new AlreadyExistsException("Group already exists");
         }
 
         Group group = groupDTOMapper.toEntity(groupDTO);
@@ -53,7 +54,7 @@ public class GroupServiceImpl implements GroupService {
     public void updateGroup(GroupDTO groupDTO) {
 
         if(groupRepository.existsByIdentifierAndIdNot(groupDTO.identifier(),groupDTO.id())) {
-            throw new ResourceNotFoundException("You cannot update a group into one that already exists ");
+            throw new AlreadyExistsException("You cannot update a group into one that already exists");
         }
 
         Group group = groupRepository.findById(groupDTO.id()).orElseThrow(()->new ResourceNotFoundException("Group not found"));

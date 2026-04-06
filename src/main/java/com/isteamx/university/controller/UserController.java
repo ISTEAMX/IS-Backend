@@ -1,7 +1,6 @@
 package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.LoginDTO;
-import com.isteamx.university.dto.RegisterDTO;
 import com.isteamx.university.dto.ResponseLoginDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.service.AuthService;

@@ -21,7 +21,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     @Override
     public ProfessorDTO getProfessor(Long professorId) {
-        Professor professor = professorRepository.findById(professorId).orElseThrow(()->new RuntimeException("Professor Not Found"));
+        Professor professor = professorRepository.findById(professorId).orElseThrow(()->new ResourceNotFoundException("Professor Not Found"));
         return professorDTOMapper.toDTO(professor);
     }
 
@@ -40,7 +40,7 @@ public class ProfessorServiceImpl implements ProfessorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Professor with ID " + professorDTO.id() + " does not exist"));
 
         professor.setFirstName(professorDTO.firstName());
-        professor.setLastName(professorDTO.firstName());
+        professor.setLastName(professorDTO.lastName());
         professor.setDepartment(professorDTO.department());
 
         Professor savedProfessor = professorRepository.save(professor);

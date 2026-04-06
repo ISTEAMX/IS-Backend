@@ -18,9 +18,9 @@ public class UserDTOMapper {
 
         return new UserDTO(
                 entity.getId(),
-                entity.getEmail(),
                 entity.getFirstName(),
                 entity.getLastName(),
+                entity.getEmail(),
                 entity.getPassword(),
                 entity.getRole(),
                 professorDTOMapper.toDTO(entity.getProfessor())

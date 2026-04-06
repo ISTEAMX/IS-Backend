@@ -3,11 +3,9 @@ package com.isteamx.university.service;
 import com.isteamx.university.dto.CreateScheduleRequestDTO;
 import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface ScheduleService {
 
     ScheduleDTO getSchedule(Long id);
