@@ -2,6 +2,7 @@ package com.isteamx.university.unitTests;
 
 import com.isteamx.university.dto.*;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
+import com.isteamx.university.entity.Professor;
 import com.isteamx.university.entity.User;
 import com.isteamx.university.repository.UserRepository;
 import com.isteamx.university.service.impl.AuthServiceImpl;
@@ -48,6 +49,10 @@ public class AuthTest {
         user.setPassword("encodedPassword");
 
         String token = "Token";
+
+        Professor mockProfessor = new Professor();
+        mockProfessor.setId(1L);
+        user.setProfessor(mockProfessor);
 
 
         LoginDTO loginDTO = new LoginDTO("test@test.com", "password");
