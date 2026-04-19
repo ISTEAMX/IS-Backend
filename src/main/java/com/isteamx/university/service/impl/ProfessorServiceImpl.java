@@ -28,7 +28,7 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Override
     public List<ProfessorDTO> getProfessors() {
         List<Professor> professors = professorRepository.findAll();
-        return professors.stream().map(professorDTOMapper::toDTO).collect(Collectors.toList());
+        return professors.stream().filter(professor -> professor.getUser().getRole().equals("PROFESSOR")).map(professorDTOMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
