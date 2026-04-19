@@ -3,6 +3,7 @@ package com.isteamx.university.unitTests;
 import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.dtoMapper.ProfessorDTOMapper;
 import com.isteamx.university.entity.Professor;
+import com.isteamx.university.entity.User;
 import com.isteamx.university.repository.ProfessorRepository;
 import com.isteamx.university.service.impl.ProfessorServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -54,9 +55,19 @@ public class ProfessorTest {
         prof1.setId(1L);
         prof1.setFirstName("Lukas");
 
+        User user1 = new User();
+        user1.setId(1L);
+        user1.setRole("PROFESSOR");
+        prof1.setUser(user1);
+
         Professor prof2 = new Professor();
         prof2.setId(2L);
         prof2.setFirstName("Zozo");
+
+        User user2 = new User();
+        user2.setId(2L);
+        user2.setRole("PROFESSOR");
+        prof2.setUser(user2);
 
         List<Professor> mockProfessors = List.of(prof1, prof2);
 
