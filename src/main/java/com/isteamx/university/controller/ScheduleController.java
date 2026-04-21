@@ -61,7 +61,7 @@ public class ScheduleController {
     @Operation(summary = "Filter schedules", description = "Returns schedules matching the provided filters.")
     @ApiResponse(responseCode = "200", description = "Filtered schedules retrieved successfully")
     @GetMapping("/user/filter")
-    public List<ScheduleDTO> getSchedulesByFilters(@RequestBody FilterDTO filterDTO) {
+    public List<ScheduleDTO> getSchedulesByFilters(@ModelAttribute FilterDTO filterDTO) {
         return scheduleService.getSchedulesByFilters(filterDTO);
     }
 
