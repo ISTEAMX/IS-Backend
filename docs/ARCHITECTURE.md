@@ -10,6 +10,8 @@ The `IS-Backend` is a Spring Boot application built using a **Layered Architectu
 - **Persistence**: [Spring Data JPA (Hibernate)](https://spring.io/projects/spring-data-jpa)
 - **Security**: [Spring Security + JWT](https://spring.io/projects/spring-security)
 - **Build Tool**: [Maven 3.9+](https://maven.apache.org/)
+- **Monitoring**: [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/) + [Micrometer CloudWatch](https://micrometer.io/)
+- **Error Tracking**: [AWS CloudWatch Logs](https://docs.aws.amazon.com/cloudwatch/)
 - **Utilities**: [Lombok](https://projectlombok.org/)
 
 ## Core Architectural Layers
@@ -34,11 +36,20 @@ graph TD
         Security[Spring Security / JWT Filter]
         Service[Service Layer - Business Logic]
         Mapper[DTO Mappers]
+        Monitoring[CloudWatch Error Reporter]
+        Actuator[Spring Boot Actuator]
     end
 
     subgraph "Data Layer"
         Repo[Spring Data JPA Repositories]
         DB[(PostgreSQL)]
+    end
+
+    subgraph "AWS Monitoring"
+        CWLogs[CloudWatch Logs]
+        CWMetrics[CloudWatch Metrics]
+        CWAlarms[CloudWatch Alarms]
+        SNS[SNS Email Alerts]
     end
 
     Web --> Security
@@ -48,6 +59,12 @@ graph TD
     Service --> Repo
     Repo --> DB
     Service --> Mapper
+    Controller --> Monitoring
+    Monitoring --> CWLogs
+    Actuator --> CWMetrics
+    CWLogs --> CWAlarms
+    CWMetrics --> CWAlarms
+    CWAlarms --> SNS
 ```
 
 ## Key Components
@@ -56,3 +73,4 @@ graph TD
 - **Repositories**: Located in `src/main/java/com/isteamx/university/repository/`.
 - **DTOs**: Data Transfer Objects to decouple internal entities from the external API representation.
 - **Mappers**: For converting between Entities and DTOs.
+- **Monitoring**: Located in `src/main/java/com/isteamx/university/monitoring/`. Includes `CloudWatchErrorReporter` for sending structured error events to AWS CloudWatch Logs, and `ErrorReportController` for ingesting frontend error reports.

@@ -22,3 +22,11 @@ The `IS-Backend` provides a comprehensive set of RESTful APIs to manage the univ
 ### 4. Robust Error Handling
 - **Global Exception Handling**: Standardized error responses across all API endpoints, ensuring a predictable experience for client developers.
 - **Data Validation**: Server-side validation of incoming DTOs to maintain data integrity.
+
+### 5. Monitoring & Observability
+- **Spring Boot Actuator**: Exposes health, info, and metrics endpoints for operational visibility.
+- **AWS CloudWatch Integration**: Structured error events are sent to CloudWatch Logs for centralized tracking.
+- **Micrometer Metrics**: JVM, HTTP request, and database metrics exported to CloudWatch Metrics.
+- **Frontend Error Ingestion**: A dedicated `/api/monitoring/error` endpoint receives client-side error reports and forwards them to CloudWatch.
+- **Alerting**: CloudWatch Alarms trigger SNS email notifications for high error rates, EC2 health failures, and CPU spikes.
+

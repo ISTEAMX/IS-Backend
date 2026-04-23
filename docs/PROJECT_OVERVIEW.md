@@ -15,6 +15,7 @@ The backend handles the following domains:
 - **Resource Management**: CRUD operations for Rooms, Professors, Groups, and Subjects.
 - **Scheduling**: Coordination between time slots, rooms, professors, and student groups.
 - **API Security**: Role-based access control (RBAC) and request filtering.
+- **Monitoring & Observability**: Error tracking via AWS CloudWatch, application health via Spring Boot Actuator, and JVM/HTTP metrics via Micrometer.
 
 ## Target Audience
 - **University Administrators**: Who manage the overall system and resource allocation.

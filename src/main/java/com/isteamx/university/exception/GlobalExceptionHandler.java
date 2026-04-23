@@ -1,5 +1,8 @@
 package com.isteamx.university.exception;
 
+import com.isteamx.university.monitoring.CloudWatchErrorReporter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -8,11 +11,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler  {
+
+  private final CloudWatchErrorReporter errorReporter;
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    errorReporter.reportError("ResourceNotFound", ex);
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
   }
 
@@ -33,7 +41,14 @@ public class GlobalExceptionHandler  {
 
   @ExceptionHandler(AlreadyExistsException.class)
   public ResponseEntity<String> handleAlreadyExistsException(AlreadyExistsException ex) {
+    errorReporter.reportError("AlreadyExists", ex);
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
   }
 
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<String> handleUnexpectedException(Exception ex) {
+    log.error("Unexpected error", ex);
+    errorReporter.reportError("UnexpectedException", ex);
+    return new ResponseEntity<>("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }
