@@ -4,21 +4,28 @@
 The `IS-Backend` provides a comprehensive set of RESTful APIs to manage the university's academic resources and scheduling.
 
 ### 1. User Authentication & Security
-- **JWT Authentication**: Secure, stateless authentication using JSON Web Tokens.
+- **JWT Authentication**: Secure, stateless authentication using JSON Web Tokens (via jjwt library).
 - **Role-Based Access Control (RBAC)**: Differentiates between `ADMIN` and `USER` roles to protect sensitive administrative endpoints.
-- **Unified Security Filter**: Global request filtering to ensure only authorized requests reach the application logic.
+- **Unified Security Filter**: Global request filtering via `JwtAuthenticationFilter` to ensure only authorized requests reach protected endpoints. Public read endpoints (prefixed with `/user/`) are accessible without authentication.
 
 ### 2. Resource Management (CRUD)
-- **Room Management**: Manage physical classrooms, labs, and lecture halls, including capacity and location.
-- **Professor Profiles**: Maintain records of teaching staff, their specializations, and availability.
-- **Student Groups**: Organize students into cohorts for streamlined scheduling.
-- **Subject Catalog**: Define the academic curriculum with specific subject IDs and names.
+- **Room Management**: Manage physical classrooms, labs, and lecture halls, including `name`, `capacity`, `type`, and `location`. Unique constraints on name and location prevent duplicates.
+- **Professor Profiles**: Maintain records of teaching staff with `firstName`, `lastName`, and `department`, linked to user accounts.
+- **Student Groups**: Organize students into cohorts with a unique `identifier`, `specialization`, and `year`.
+- **Subject Catalog**: Define the academic curriculum with `name` and `activityType` (e.g., lecture, lab, seminar).
 
 ### 3. Scheduling & Coordination
-- **Conflict-Free Scheduling**: The system logic ensures that time slots, rooms, and professors are coordinated to avoid scheduling overlaps.
-- **Advanced Filtering**: Support for filtering schedules by Room, Group, or Professor, providing flexible views of the university timetable.
-- **Automated Time Slot Management**: Handles start and end times for academic sessions across different days of the week.
+- **Conflict-Free Scheduling**: Application-level logic ensures that groups and professors cannot be double-booked at the same `startingHour`, `scheduleDay`, and `frequency`.
+- **Frequency Support**: Schedules support `SAPTAMANAL` (weekly), `PARA` (even weeks), and `INPARA` (odd weeks) frequencies.
+- **Advanced Filtering**: Dynamic filtering of schedules by Room, Group, Professor, Subject, day, and frequency via a flexible query API.
+- **Time Slot Management**: Handles `startingHour` and `endingHour` for academic sessions across different days of the week.
 
 ### 4. Robust Error Handling
-- **Global Exception Handling**: Standardized error responses across all API endpoints, ensuring a predictable experience for client developers.
-- **Data Validation**: Server-side validation of incoming DTOs to maintain data integrity.
+- **Global Exception Handling**: Standardized error responses across all API endpoints via `GlobalExceptionHandler`, ensuring a predictable experience for client developers.
+- **Custom Exceptions**: `ResourceNotFoundException`, `AlreadyExistsException`, `AccessDeniedException`, `UserUnauthorizedException`.
+
+### 5. API Documentation
+- **Swagger UI**: Interactive API documentation available at `/swagger-ui/index.html` via SpringDoc OpenAPI integration.
+
+### 6. Database Migration
+- **Flyway**: Versioned SQL migration scripts ensure repeatable and safe schema evolution across environments.

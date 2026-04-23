@@ -1,7 +1,7 @@
 # Database Design: IS-Backend
 
 ## Overview
-The `IS-Backend` uses a relational database schema (PostgreSQL) to manage university entities and their relationships.
+The `IS-Backend` uses a relational database schema (PostgreSQL) to manage university entities and their relationships. Schema is managed via **Flyway** migrations located in `src/main/resources/db/migration/`.
 
 ## Entity-Relationship Diagram (ERD)
 ```mermaid
@@ -14,6 +14,8 @@ erDiagram
 
     USER {
         long id PK
+        string firstName
+        string lastName
         string email UK
         string password
         string role
@@ -21,9 +23,10 @@ erDiagram
 
     PROFESSOR {
         long id PK
-        string name
-        string specialization
-        long user_id FK
+        string firstName
+        string lastName
+        string department
+        long user_id FK,UK
     }
 
     ROOM {
@@ -36,21 +39,25 @@ erDiagram
 
     GROUP {
         long id PK
-        string name UK
+        string identifier UK
+        string specialization
+        int year
     }
 
     SUBJECT {
         long id PK
-        string name UK
+        string name
+        string activityType
     }
 
     SCHEDULE {
         long id PK
-        string day
-        time startTime
-        time endTime
-        long room_id FK
+        string scheduleDay
+        string startingHour
+        string endingHour
+        string frequency
         long professor_id FK
+        long room_id FK
         long group_id FK
         long subject_id FK
     }
@@ -59,17 +66,17 @@ erDiagram
 ## Table Descriptions
 
 ### User & Professor
-- **User**: Stores authentication credentials and role-based permissions (`ADMIN`, `USER`).
-- **Professor**: Profile details linked to a specific user account. Specializations are used for scheduling logic.
+- **User** (`users`): Stores authentication credentials (`email`, `password`), personal info (`firstName`, `lastName`), and role-based permissions (`ADMIN`, `USER`).
+- **Professor** (`professors`): Teaching staff profile with `firstName`, `lastName`, and `department`. Linked 1:1 to a `User` account via `user_id`.
 
 ### Infrastructure & Resources
-- **Room**: Physical classrooms or facilities. Includes metadata like capacity and location.
-- **Group**: Student cohorts (e.g., student years or classes).
-- **Subject**: Academic courses that form the curriculum.
+- **Room** (`rooms`): Physical classrooms or facilities. Includes `name` (unique), `capacity`, `type`, and `location` (unique).
+- **Group** (`student_groups`): Student cohorts identified by a unique `identifier`, with `specialization` and `year`.
+- **Subject** (`subjects`): Academic courses with `name` and `activityType` (e.g., lecture, lab, seminar).
 
 ### Scheduling (Coordination)
-- **Schedule**: The central coordinating table that links a Day/Time to a Room, Professor, Group, and Subject. Unique constraints and application logic ensure no double-booking occurs.
+- **Schedule** (`schedules`): The central coordinating table that links a `scheduleDay`/time slot (`startingHour`, `endingHour`) to a Room, Professor, Group, and Subject. Includes a `frequency` field (`SAPTAMANAL`, `PARA`, `INPARA`) to support weekly/biweekly patterns. Application-level logic ensures no double-booking of rooms, professors, or groups at the same time slot and frequency.
 
 ## Data Persistence Strategy
-- **Hibernate**: Used for ORM (Object-Relational Mapping).
-- **DDL Management**: In development, `spring.jpa.hibernate.ddl-auto` is typically set to `update` to automatically adjust the schema as entities evolve.
+- **Hibernate**: Used for ORM (Object-Relational Mapping) with `spring.jpa.hibernate.ddl-auto=validate`.
+- **Flyway**: Manages database schema versioning via SQL migration scripts in `src/main/resources/db/migration/`. The initial schema is defined in `V1__Initial_Schema.sql`.

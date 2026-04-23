@@ -14,9 +14,13 @@
 - **Error**: `Port 8080 is already in use`.
 - **Solution**: Identify the process using the port and terminate it (e.g., `lsof -i :8080` followed by `kill -9 <PID>`) or change the `server.port` in your `application.properties`.
 
-### 4. Hibernate Schema Update Failures
-- **Error**: `Column 'X' already exists` or `Column mismatch`.
-- **Solution**: If the schema update fails, you may need to manually drop the table and let Hibernate recreate it or use a migration tool like **Liquibase** or **Flyway** (not currently implemented).
+### 4. Flyway Migration Failures
+- **Error**: `Migration checksum mismatch` or `Found non-empty schema without metadata table`.
+- **Solution**: If a migration script was modified after being applied, you may need to run `flyway repair` or reset the schema. In development, you can drop the `flyway_schema_history` table and re-run migrations. Never modify already-applied migration files in production — create a new versioned migration instead (e.g., `V2__Add_column.sql`).
+
+### 5. Hibernate Validation Failures
+- **Error**: `Schema-validation: missing column` or `Schema-validation: wrong column type`.
+- **Solution**: Since `ddl-auto` is set to `validate`, Hibernate will not auto-adjust the schema. Ensure your Flyway migration scripts match the JPA entity definitions. Create a new migration script to fix any mismatches.
 
 ## Debugging Techniques
 

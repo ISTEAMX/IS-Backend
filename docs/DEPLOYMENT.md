@@ -12,8 +12,8 @@ We deploy the application as a **Docker** container, which allows for consistent
 
 ### Dockerized Setup
 The `Dockerfile` in the root directory uses a multi-stage approach:
-1.  **Build Stage**: Uses a Maven image to resolve dependencies and build the JAR.
-2.  **Runtime Stage**: Uses a lightweight JRE image (Java 21) to run the `app.jar`.
+1.  **Build Stage**: Uses a Maven 3.9 / Eclipse Temurin 21 image to resolve dependencies and build the JAR.
+2.  **Runtime Stage**: Uses a lightweight `eclipse-temurin:21-jre-alpine` image to run the `app.jar`.
 
 #### Running with Docker
 To build and run the container locally:
@@ -22,16 +22,19 @@ docker build -t is-backend .
 docker run -p 8080:8080 is-backend
 ```
 
+## Database Migrations
+The application uses **Flyway** for database schema versioning. Migration scripts are located in `src/main/resources/db/migration/`. Flyway runs automatically on application startup and applies any pending migrations. Hibernate's `ddl-auto` is set to `validate` to ensure the schema matches the entity definitions without making automatic changes.
+
 ## Configuration Management
-The application identifies its runtime profile (e.g., `dev`, `prod`) and loads the appropriate `application.properties` or `application.yml`.
+The application loads configuration from `application.properties` and supports environment variable overrides for production deployments.
 
 ### Environment Variables
 For production deployments, the following variables must be configured:
-- `POSTGRES_HOST`: The internal/external IP of the PostgreSQL instance.
-- `POSTGRES_PORT`: Port (default `5432`).
-- `POSTGRES_DB`: Production database name.
-- `POSTGRES_USER` / `POSTGRES_PASSWORD`: Production credentials.
-- `JWT_SECRET_KEY`: A strong, randomly generated string for token signing.
+- `POSTGRES_DB`: Database name (default: `app_db`).
+- `POSTGRES_USER`: Database username (default: `postgres`).
+- `POSTGRES_PASSWORD`: Database password (default: `postgres`).
+- `JWT_SECRET_KEY`: A strong, randomly generated string for token signing (default: `default-secret`).
+- `JWT_EXPIRATION`: Token expiration time in milliseconds (default: `86400000` / 24 hours).
 
 ## CI/CD Pipeline
 (Currently, a GitHub Actions-based CI/CD pipeline is in development.)

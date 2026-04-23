@@ -4,14 +4,18 @@
 We follow a layered architecture implemented in **Spring Boot**. The core directories are:
 ```text
 src/main/java/com/isteamx/university/
-├── controller/     # Handle incoming requests and responses
-├── service/        # Business logic and coordination
-├── repository/     # Data access and ORM mapping
-├── model/          # Entities and internal data structures
-├── dto/            # Data Transfer Objects for API
-├── mapper/         # Converters between Entities and DTOs
-├── security/       # JWT configuration and security filters
-└── exception/      # Global exception handling logic
+├── config/           # OpenAPI/Swagger configuration
+├── configuration/    # Security config, JWT filter, application config
+├── controller/       # Handle incoming requests and responses
+├── dto/              # Data Transfer Objects for API
+├── dtoMapper/        # Converters between Entities and DTOs
+├── entity/           # JPA entities and internal data structures
+├── enums/            # Enumerations (e.g., Frequency)
+├── exception/        # Global exception handling logic
+├── repository/       # Data access and ORM mapping
+├── service/          # Business logic interfaces
+│   └── impl/         # Business logic implementations
+└── util/             # Utility classes (e.g., JwtUtil)
 ```
 
 ## Branching Strategy
@@ -23,10 +27,11 @@ We recommend using a feature-based branching strategy:
 
 ## Coding Standards & Best Practices
 - **Java 21 Syntax**: Use records, switch expressions, and virtual threads where appropriate.
-- **Lombok Usage**: Use `@Getter`, `@Setter`, and `@RequiredArgsConstructor` to minimize boilerplate.
-- **Separation of Concerns**: Keep Controllers light and move business logic into Service classes.
-- **DTO Mapping**: Never expose JPA entities directly via APIs; always use DTOs.
+- **Lombok Usage**: Use `@Getter`, `@Setter`, `@AllArgsConstructor`, `@NoArgsConstructor`, and `@RequiredArgsConstructor` to minimize boilerplate.
+- **Separation of Concerns**: Keep Controllers light and move business logic into Service classes. Use service interfaces with separate `impl/` implementations.
+- **DTO Mapping**: Never expose JPA entities directly via APIs; always use DTOs and dedicated mapper classes in `dtoMapper/`.
 - **Global Error Handling**: Standardize error messages through the `GlobalExceptionHandler`.
+- **Database Migrations**: Use Flyway migration scripts in `src/main/resources/db/migration/` for all schema changes. Do not rely on Hibernate auto-DDL in production.
 
 ## Testing Strategy
 We aim for high test coverage across critical business logic.

@@ -13,8 +13,10 @@ The main goals of the project are to:
 The backend handles the following domains:
 - **User Authentication**: Registration and Login using JWT.
 - **Resource Management**: CRUD operations for Rooms, Professors, Groups, and Subjects.
-- **Scheduling**: Coordination between time slots, rooms, professors, and student groups.
+- **Scheduling**: Coordination between time slots, rooms, professors, and student groups, with frequency support (weekly, even/odd weeks).
 - **API Security**: Role-based access control (RBAC) and request filtering.
+- **Database Migration**: Schema versioning via Flyway.
+- **API Documentation**: Interactive Swagger UI via SpringDoc OpenAPI.
 
 ## Target Audience
 - **University Administrators**: Who manage the overall system and resource allocation.
