@@ -14,9 +14,9 @@
 - **Error**: `Port 8080 is already in use`.
 - **Solution**: Identify the process using the port and terminate it (e.g., `lsof -i :8080` followed by `kill -9 <PID>`) or change the `server.port` in your `application.properties`.
 
-### 4. Hibernate Schema Update Failures
-- **Error**: `Column 'X' already exists` or `Column mismatch`.
-- **Solution**: If the schema update fails, you may need to manually drop the table and let Hibernate recreate it or use a migration tool like **Liquibase** or **Flyway** (not currently implemented).
+### 4. Hibernate Schema Validation Failures
+- **Error**: `Schema-validation: missing table` or `Schema-validation: missing column`.
+- **Solution**: The application uses `spring.jpa.hibernate.ddl-auto=validate`, so Hibernate will **not** create or modify tables. Ensure all required Flyway migrations in `src/main/resources/db/migration/` have been applied. If the schema is out of sync, create a new Flyway migration file (e.g., `V2__Add_column.sql`) to update the schema.
 
 ## Debugging Techniques
 

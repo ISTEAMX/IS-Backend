@@ -2,7 +2,7 @@
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/isteamx/is-backend)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4+-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.0.4-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://java.com/)
 
 The core REST API for the **ISTEAMX** University Management System. Built with **Spring Boot** and **Java 21**, providing a secure and scalable foundation for academic resource scheduling.
@@ -44,12 +44,17 @@ The API will be available at [http://localhost:8080](http://localhost:8080).
 ---
 
 ## 🛠️ Technologies Used
-- **Framework**: Spring Boot 3.4+
+- **Framework**: Spring Boot 4.0.4
 - **Language**: Java 21 (Records, Virtual Threads)
 - **Database**: PostgreSQL 15+
-- **Security**: Spring Security + JWT
+- **Migrations**: Flyway
+- **Security**: Spring Security + JWT (jjwt 0.11.5)
 - **Persistence**: Spring Data JPA (Hibernate)
+- **API Docs**: springdoc-openapi (Swagger UI)
+- **Monitoring**: Spring Boot Actuator + Micrometer CloudWatch
+- **Error Tracking**: AWS CloudWatch Logs
 - **Build Tool**: Maven
+- **Utilities**: Lombok
 
 ---
 
@@ -75,4 +80,3 @@ We welcome contributions! Please refer to the [Development Workflow](docs/DEVELO
 
 ## 📄 License
 This project is licensed under the [MIT License](LICENSE) (or as per project policy).
-

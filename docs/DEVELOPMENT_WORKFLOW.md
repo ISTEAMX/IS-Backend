@@ -5,13 +5,18 @@ We follow a layered architecture implemented in **Spring Boot**. The core direct
 ```text
 src/main/java/com/isteamx/university/
 ├── controller/     # Handle incoming requests and responses
-├── service/        # Business logic and coordination
+├── service/        # Business logic interfaces
+│   └── impl/       # Business logic implementations
 ├── repository/     # Data access and ORM mapping
-├── model/          # Entities and internal data structures
+├── entity/         # JPA entities and internal data structures
 ├── dto/            # Data Transfer Objects for API
-├── mapper/         # Converters between Entities and DTOs
-├── security/       # JWT configuration and security filters
-└── exception/      # Global exception handling logic
+├── dtoMapper/      # Converters between Entities and DTOs
+├── configuration/  # Security config, JWT filter, application config
+├── exception/      # Global exception handling logic
+├── enums/          # Enumerations (e.g., Frequency)
+├── monitoring/     # CloudWatch error reporter and error report controller
+├── config/         # OpenAPI/Swagger configuration
+└── util/           # Utility classes (e.g., JwtUtil)
 ```
 
 ## Branching Strategy
@@ -30,8 +35,8 @@ We recommend using a feature-based branching strategy:
 
 ## Testing Strategy
 We aim for high test coverage across critical business logic.
-- **Unit Testing**: [JUnit 5](https://junit.org/junit5/) and [Mockito](https://site.mockito.org/) for service-level testing.
-- **Integration Testing**: Test real database interactions with [H2](https://www.h2database.com/html/main.html) or [Testcontainers](https://testcontainers.com/).
+- **Unit Testing**: [JUnit 5](https://junit.org/junit5/) via `spring-boot-starter-data-jpa-test` and `spring-boot-starter-webmvc-test`.
+- **Integration Testing**: [H2 in-memory database](https://www.h2database.com/html/main.html) for test-scoped database interactions.
 
 ### Running Tests
 ```bash

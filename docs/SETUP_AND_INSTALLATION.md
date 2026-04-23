@@ -47,7 +47,7 @@ Then, run the application:
 The backend will be available at [http://localhost:8080](http://localhost:8080).
 
 ## Database Migration
-The application uses Hibernate's `ddl-auto: update` (default in development) or `create-drop` to manage the schema. Ensure your PostgreSQL instance is running before starting the application.
+The application uses **Flyway** for database schema management. Migration scripts are located in `src/main/resources/db/migration/`. Hibernate's `ddl-auto` is set to `validate`, meaning it will verify the schema matches the entity mappings but will **not** modify the database — all schema changes must be done via Flyway migration files. Ensure your PostgreSQL instance is running before starting the application.
 
 ## Other Common Commands
 - **Run Unit Tests**: `./mvnw test`

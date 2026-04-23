@@ -27,11 +27,14 @@ The application identifies its runtime profile (e.g., `dev`, `prod`) and loads t
 
 ### Environment Variables
 For production deployments, the following variables must be configured:
-- `POSTGRES_HOST`: The internal/external IP of the PostgreSQL instance.
-- `POSTGRES_PORT`: Port (default `5432`).
-- `POSTGRES_DB`: Production database name.
-- `POSTGRES_USER` / `POSTGRES_PASSWORD`: Production credentials.
+- `POSTGRES_DB`: Production database name (default: `app_db`).
+- `POSTGRES_USER` / `POSTGRES_PASSWORD`: Production credentials (default: `postgres`).
 - `JWT_SECRET_KEY`: A strong, randomly generated string for token signing.
+- `JWT_EXPIRATION`: Token expiration time in milliseconds (default: `86400000` — 24 hours).
+- `CLOUDWATCH_ENABLED`: Set to `true` to enable CloudWatch log shipping (default: `false`).
+- `AWS_REGION`: AWS region for CloudWatch (default: `eu-central-1`).
+- `CLOUDWATCH_LOG_GROUP`: CloudWatch Log Group name (default: `/isteamx/backend`).
+- `CLOUDWATCH_LOG_STREAM`: CloudWatch Log Stream name (default: `app`).
 
 ## CI/CD Pipeline
 (Currently, a GitHub Actions-based CI/CD pipeline is in development.)
