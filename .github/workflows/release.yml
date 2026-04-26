@@ -47,3 +47,5 @@ jobs:
     with:
       component: ${{ github.event.inputs.component || 'backend' }}
       release_type: ${{ github.event.inputs.release_type || 'patch' }}
+    secrets:
+      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
