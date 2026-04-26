@@ -40,7 +40,8 @@ public class AuthServiceImpl implements AuthService {
             throw new UserUnauthorizedException("Incorrect password");
         }
 
-        UserData userData = new UserData(user.getId(),user.getProfessor().getId(),user.getFirstName(),user.getLastName(),user.getRole());
+        Long professorId = user.getProfessor() != null ? user.getProfessor().getId() : null;
+        UserData userData = new UserData(user.getId(),professorId,user.getFirstName(),user.getLastName(),user.getRole(),user.getPasswordChanged());
 
          String token = jwtUtil.generateToken(loginDTO.email());
 
@@ -64,6 +65,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(userDTO.email());
         user.setPassword(passwordEncoder.encode(userDTO.password()));
         user.setRole(userDTO.role());
+        user.setPasswordChanged(false);
 
         Professor professor = new Professor();
         professor.setFirstName(userDTO.firstName());
@@ -79,5 +81,20 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = userRepository.save(user);
 
         return userDTOMapper.toDTO(savedUser);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String email, ChangePasswordDTO changePasswordDTO) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(changePasswordDTO.currentPassword(), user.getPassword())) {
+            throw new UserUnauthorizedException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(changePasswordDTO.newPassword()));
+        user.setPasswordChanged(true);
+        userRepository.save(user);
     }
 }

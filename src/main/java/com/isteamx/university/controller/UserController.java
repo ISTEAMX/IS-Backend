@@ -1,12 +1,15 @@
 package com.isteamx.university.controller;
 
+import com.isteamx.university.dto.ChangePasswordDTO;
 import com.isteamx.university.dto.LoginDTO;
 import com.isteamx.university.dto.ResponseLoginDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +40,16 @@ public class UserController {
     @PostMapping("/login")
     public ResponseLoginDTO loginUser(@RequestBody LoginDTO loginDTO) {
         return authService.login(loginDTO);
+    }
+
+    @Operation(summary = "Change password", description = "Allows an authenticated user to change their password.")
+    @ApiResponse(responseCode = "200", description = "Password changed successfully")
+    @PutMapping("/change-password")
+    public ResponseEntity<Map<String, String>> changePassword(
+            @RequestBody ChangePasswordDTO changePasswordDTO,
+            Authentication authentication) {
+        authService.changePassword(authentication.getName(), changePasswordDTO);
+        return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));
     }
 
 }

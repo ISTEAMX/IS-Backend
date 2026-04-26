@@ -33,6 +33,8 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private Boolean passwordChanged = false;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Professor professor;
