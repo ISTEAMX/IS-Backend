@@ -29,6 +29,9 @@ public class Group {
     @Column(nullable = false)
     private int year;
 
+    @Column(nullable = false)
+    private int semester;
+
     @OneToMany(mappedBy = "group",cascade = CascadeType.ALL)
     private List<Schedule> schedule;
 }

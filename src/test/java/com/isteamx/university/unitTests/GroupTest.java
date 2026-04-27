@@ -33,7 +33,7 @@ public class GroupTest {
     public void shouldGetGroupById() {
         Long id = 1L;
 
-        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3);
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3, 1);
 
         Group group = new Group();
         group.setId(1L);
@@ -57,8 +57,8 @@ public class GroupTest {
 
         List<Group> groupList = List.of(group1, group2);
 
-        GroupDTO dto1 = new GroupDTO(1L, "group1", "TI",3);
-        GroupDTO dto2 = new GroupDTO(2L, "group2", "TI",3 );
+        GroupDTO dto1 = new GroupDTO(1L, "group1", "TI",3, 1);
+        GroupDTO dto2 = new GroupDTO(2L, "group2", "TI",3, 1);
 
         when(groupRepository.findAll()).thenReturn(groupList);
         when(groupDTOMapper.toDTO(group1)).thenReturn(dto1);
@@ -74,7 +74,7 @@ public class GroupTest {
 
     @Test
     public void shouldCreateGroup() {
-        GroupDTO group1 = new GroupDTO(1L, "group1", "TI",3);
+        GroupDTO group1 = new GroupDTO(1L, "group1", "TI",3, 1);
 
         Group mappedGroup = new Group();
         mappedGroup.setId(1L);
@@ -86,7 +86,7 @@ public class GroupTest {
         savedGroup.setIdentifier("group1");
         savedGroup.setSpecialization("TI");
 
-        GroupDTO savedGroupDTO = new GroupDTO(1L, "group1", "TI",3);
+        GroupDTO savedGroupDTO = new GroupDTO(1L, "group1", "TI",3, 1);
 
         when(groupRepository.existsByIdentifier(group1.identifier())).thenReturn(false);
         when(groupDTOMapper.toEntity(group1)).thenReturn(mappedGroup);

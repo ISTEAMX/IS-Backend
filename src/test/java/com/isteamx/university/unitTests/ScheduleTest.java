@@ -54,7 +54,7 @@ public class ScheduleTest {
         RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
 
-        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3);
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3, 1);
 
 
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
@@ -81,12 +81,12 @@ public class ScheduleTest {
 
         ProfessorDTO professorDTO = new ProfessorDTO(1L, "test", "test", "test");
         RoomDTO roomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
-        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3);
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI",3, 1);
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
         ProfessorDTO professorDTO2 = new ProfessorDTO(2L, "test", "test", "test");
         RoomDTO roomDTO2 = new RoomDTO(2L, "T204",60,"Lab","T");
-        GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3);
+        GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3, 1);
         SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test", "Lab");
 
         ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,groupDTO,subjectDTO);
@@ -128,7 +128,7 @@ public class ScheduleTest {
                 100L, "Monday", "08:00", "10:00", Frequency.PARA,
                 new ProfessorDTO(1L, "test", "test", "test"),
                 new RoomDTO(1L, "T204",60,"Lab","T"),
-                new GroupDTO(1L, "group1", "TI",3),
+                new GroupDTO(1L, "group1", "TI",3, 1),
                 new SubjectDTO(1L, "test", "Lab")
         );
 

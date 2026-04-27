@@ -15,7 +15,8 @@ public class GroupDTOMapper {
                 group.getId(),
                 group.getIdentifier(),
                 group.getSpecialization(),
-                group.getYear()
+                group.getYear(),
+                group.getSemester()
         );
     }
 
@@ -28,6 +29,7 @@ public class GroupDTOMapper {
                 groupDTO.identifier(),
                 groupDTO.specialization(),
                 groupDTO.year(),
+                groupDTO.semester(),
                 null
         );
     }
