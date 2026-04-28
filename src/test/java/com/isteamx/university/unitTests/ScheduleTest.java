@@ -60,7 +60,7 @@ public class ScheduleTest {
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,groupDTO,subjectDTO);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
         Schedule schedule = new Schedule();
 
         when(scheduleRepository.findById(scheduleDTO.id())).thenReturn(Optional.of(schedule));
@@ -89,8 +89,8 @@ public class ScheduleTest {
         GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3, 1);
         SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test", "Lab");
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,groupDTO,subjectDTO);
-        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,professorDTO2 ,roomDTO2,groupDTO2,subjectDTO2);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
+        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,professorDTO2 ,roomDTO2,List.of(groupDTO2),subjectDTO2);
 
 
         Schedule schedule = new Schedule();
@@ -118,7 +118,7 @@ public class ScheduleTest {
         Group group = new Group(); group.setId(1L);
         Subject subject = new Subject(); subject.setId(1L);
 
-        CreateScheduleRequestDTO inp = new CreateScheduleRequestDTO(null,"Monday","08:00","10:00", Frequency.PARA,professor.getId() ,room.getId(),group.getId(),subject.getId());
+        CreateScheduleRequestDTO inp = new CreateScheduleRequestDTO(null,"Monday","08:00","10:00", Frequency.PARA,professor.getId() ,room.getId(),List.of(group.getId()),subject.getId());
 
 
         Schedule savedSchedule = new Schedule();
@@ -128,7 +128,7 @@ public class ScheduleTest {
                 100L, "Monday", "08:00", "10:00", Frequency.PARA,
                 new ProfessorDTO(1L, "test", "test", "test"),
                 new RoomDTO(1L, "T204",60,"Lab","T"),
-                new GroupDTO(1L, "group1", "TI",3, 1),
+                List.of(new GroupDTO(1L, "group1", "TI",3, 1)),
                 new SubjectDTO(1L, "test", "Lab")
         );
 
@@ -137,7 +137,7 @@ public class ScheduleTest {
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
 
-        when(scheduleRepository.existsByGroupAndStartingHourAndScheduleDayAndFrequency(
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
                 group, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
 
         when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(

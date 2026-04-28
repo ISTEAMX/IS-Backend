@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -43,10 +46,14 @@ public class Schedule {
     @JsonIgnore
     private Room room;
 
-    @JoinColumn(name = "group_id",referencedColumnName = "id", nullable = false)
-    @ManyToOne
+    @ManyToMany
+    @JoinTable(
+            name = "schedule_groups",
+            joinColumns = @JoinColumn(name = "schedule_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
     @JsonIgnore
-    private Group group;
+    private List<Group> groups = new ArrayList<>();
 
     @JoinColumn(name = "subject_id",referencedColumnName = "id", nullable = false)
     @ManyToOne

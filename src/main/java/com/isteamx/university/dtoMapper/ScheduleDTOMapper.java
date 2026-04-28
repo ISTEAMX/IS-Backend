@@ -1,9 +1,14 @@
 package com.isteamx.university.dtoMapper;
 
+import com.isteamx.university.dto.GroupDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.entity.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +25,10 @@ public class ScheduleDTOMapper {
             return null;
         }
 
+        List<GroupDTO> groupDTOs = schedule.getGroups() != null
+                ? schedule.getGroups().stream().map(groupMapper::toDTO).collect(Collectors.toList())
+                : Collections.emptyList();
+
         return new ScheduleDTO(
                 schedule.getId(),
                 schedule.getScheduleDay(),
@@ -28,7 +37,7 @@ public class ScheduleDTOMapper {
                 schedule.getFrequency(),
                 professorMapper.toDTO(schedule.getProfessor()),
                 roomMapper.toDTO(schedule.getRoom()),
-                groupMapper.toDTO(schedule.getGroup()),
+                groupDTOs,
                 subjectMapper.toDTO(schedule.getSubject())
         );
     }
@@ -46,7 +55,9 @@ public class ScheduleDTOMapper {
         schedule.setFrequency(dto.frequency());
         schedule.setProfessor(professorMapper.toEntity(dto.professorDTO()));
         schedule.setRoom(roomMapper.toEntity(dto.roomDTO()));
-        schedule.setGroup(groupMapper.toEntity(dto.groupDTO()));
+        if (dto.groups() != null) {
+            schedule.setGroups(dto.groups().stream().map(groupMapper::toEntity).collect(Collectors.toList()));
+        }
         schedule.setSubject(subjectMapper.toEntity(dto.subjectDTO()));
 
         return schedule;

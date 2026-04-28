@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,13 +54,20 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Room room = roomRepository.findById(createScheduleRequestDTO.roomId()).orElseThrow(() -> new ResourceNotFoundException("Room Not Found"));
 
-        Group group = groupRepository.findById(createScheduleRequestDTO.groupId()).orElseThrow(() -> new ResourceNotFoundException("Group not found"));
-
         Subject subject = subjectRepository.findById(createScheduleRequestDTO.subjectId()).orElseThrow(() -> new ResourceNotFoundException("Subject not found"));
 
+        List<Group> groups = new ArrayList<>();
+        if (createScheduleRequestDTO.groupIds() != null && !createScheduleRequestDTO.groupIds().isEmpty()) {
+            for (Long groupId : createScheduleRequestDTO.groupIds()) {
+                Group group = groupRepository.findById(groupId).orElseThrow(() -> new ResourceNotFoundException("Group not found with id: " + groupId));
+                groups.add(group);
+            }
+        }
 
-        if(scheduleRepository.existsByGroupAndStartingHourAndScheduleDayAndFrequency(group, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
-            throw new AlreadyExistsException("This group already has a subject at that specific hour");
+        for (Group group : groups) {
+            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency())) {
+                throw new AlreadyExistsException("Group " + group.getIdentifier() + " already has a subject at that specific hour");
+            }
         }
 
         if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(professor, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
@@ -92,7 +100,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setFrequency(createScheduleRequestDTO.frequency());
         schedule.setProfessor(professor);
         schedule.setRoom(room);
-        schedule.setGroup(group);
+        schedule.setGroups(groups);
         schedule.setSubject(subject);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
@@ -111,13 +119,20 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Room room = roomRepository.findById(createScheduleRequestDTO.roomId()).orElseThrow(() -> new ResourceNotFoundException("The Room you're looking for was not found"));
 
-        Group group = groupRepository.findById(createScheduleRequestDTO.groupId()).orElseThrow(() -> new ResourceNotFoundException("The Group you're looking for was not found"));
-
         Subject subject = subjectRepository.findById(createScheduleRequestDTO.subjectId()).orElseThrow(() -> new ResourceNotFoundException("The Subject you're looking for was not found"));
 
+        List<Group> groups = new ArrayList<>();
+        if (createScheduleRequestDTO.groupIds() != null && !createScheduleRequestDTO.groupIds().isEmpty()) {
+            for (Long groupId : createScheduleRequestDTO.groupIds()) {
+                Group group = groupRepository.findById(groupId).orElseThrow(() -> new ResourceNotFoundException("Group not found with id: " + groupId));
+                groups.add(group);
+            }
+        }
 
-        if(scheduleRepository.existsByGroupAndStartingHourAndScheduleDayAndFrequencyAndIdNot(group,createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency(),createScheduleRequestDTO.id())) {
-            throw new AlreadyExistsException("This group already has a subject at that specific hour");
+        for (Group group : groups) {
+            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency(), createScheduleRequestDTO.id())) {
+                throw new AlreadyExistsException("Group " + group.getIdentifier() + " already has a subject at that specific hour");
+            }
         }
 
         if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(professor,createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency(),createScheduleRequestDTO.id())) {
@@ -148,7 +163,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setEndingHour(createScheduleRequestDTO.endingHour());
         schedule.setRoom(room);
         schedule.setProfessor(professor);
-        schedule.setGroup(group);
+        schedule.setGroups(groups);
         schedule.setSubject(subject);
 
 

@@ -32,6 +32,6 @@ public class Group {
     @Column(nullable = false)
     private int semester;
 
-    @OneToMany(mappedBy = "group",cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "groups")
     private List<Schedule> schedule;
 }

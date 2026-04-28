@@ -18,10 +18,10 @@ import java.util.List;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
-    @Query("SELECT s FROM Schedule s WHERE " +
+    @Query("SELECT DISTINCT s FROM Schedule s LEFT JOIN s.groups g WHERE " +
             "(:professorId IS NULL OR s.professor.id = :professorId) AND " +
             "(:roomId IS NULL OR s.room.id = :roomId) AND " +
-            "(:groupId IS NULL OR s.group.id = :groupId) AND " +
+            "(:groupId IS NULL OR g.id = :groupId) AND " +
             "(:subjectId IS NULL OR s.subject.id = :subjectId) AND " +
             "(:scheduleDay IS NULL OR s.scheduleDay = :scheduleDay) AND " +
             "(:frequency IS NULL OR s.frequency = :frequency)")
@@ -37,11 +37,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findByRoomAndScheduleDayAndStartingHour(Room room, String schedule, String startingHour);
 
-    Boolean existsByGroupAndStartingHourAndScheduleDayAndFrequency(Group group, String startingHour ,String scheduleDay, Frequency frequency);
+    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(Group group, String startingHour, String scheduleDay, Frequency frequency);
 
     Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequency(Professor professor, String startingHour, String scheduleDay, Frequency frequency);
     
-    Boolean existsByGroupAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Group group, String startingHour, String scheduleDay, Frequency frequency, Long id);
+    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Group group, String startingHour, String scheduleDay, Frequency frequency, Long id);
 
     Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Professor professor, String startingHour, String scheduleDay, Frequency frequency, Long id);
 }
