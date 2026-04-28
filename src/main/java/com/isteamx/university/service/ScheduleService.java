@@ -20,4 +20,6 @@ public interface ScheduleService {
 
     List<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO);
 
+    void approveSchedule(Long id);
+
 }

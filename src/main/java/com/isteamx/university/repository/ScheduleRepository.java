@@ -5,6 +5,7 @@ import com.isteamx.university.entity.Professor;
 import com.isteamx.university.entity.Room;
 import com.isteamx.university.entity.Schedule;
 import com.isteamx.university.enums.Frequency;
+import com.isteamx.university.enums.Pending;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,13 +36,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("frequency") Frequency frequency
     );
 
-    List<Schedule> findByRoomAndScheduleDayAndStartingHour(Room room, String schedule, String startingHour);
+    List<Schedule> findByRoomAndScheduleDayAndStartingHourAndPending(Room room, String schedule, String startingHour, Pending pending);
 
-    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(Group group, String startingHour, String scheduleDay, Frequency frequency);
+    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(Group group, String startingHour, String scheduleDay, Frequency frequency,Pending pending);
 
-    Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequency(Professor professor, String startingHour, String scheduleDay, Frequency frequency);
+    Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(Professor professor, String startingHour, String scheduleDay, Frequency frequency, Pending pending);
     
-    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Group group, String startingHour, String scheduleDay, Frequency frequency, Long id);
+    Boolean existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(Group group, String startingHour, String scheduleDay, Frequency frequency, Pending pending, Long id);
 
-    Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(Professor professor, String startingHour, String scheduleDay, Frequency frequency, Long id);
+    Boolean existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(Professor professor, String startingHour, String scheduleDay, Frequency frequency,Pending pending ,Long id);
 }

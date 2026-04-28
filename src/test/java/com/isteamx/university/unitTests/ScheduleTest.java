@@ -5,6 +5,7 @@ import com.isteamx.university.dto.*;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
 import com.isteamx.university.enums.Frequency;
+import com.isteamx.university.enums.Pending;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.*;
 import com.isteamx.university.service.impl.ScheduleServiceImpl;
@@ -60,7 +61,7 @@ public class ScheduleTest {
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,Pending.PENDING,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
         Schedule schedule = new Schedule();
 
         when(scheduleRepository.findById(scheduleDTO.id())).thenReturn(Optional.of(schedule));
@@ -89,8 +90,8 @@ public class ScheduleTest {
         GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3, 1);
         SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test", "Lab");
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
-        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,professorDTO2 ,roomDTO2,List.of(groupDTO2),subjectDTO2);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,Pending.PENDING,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
+        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,Pending.PENDING,professorDTO2 ,roomDTO2,List.of(groupDTO2),subjectDTO2);
 
 
         Schedule schedule = new Schedule();
@@ -125,7 +126,7 @@ public class ScheduleTest {
         savedSchedule.setId(100L);
 
         ScheduleDTO expectedResponse = new ScheduleDTO(
-                100L, "Monday", "08:00", "10:00", Frequency.PARA,
+                100L, "Monday", "08:00", "10:00", Frequency.PARA,Pending.PENDING,
                 new ProfessorDTO(1L, "test", "test", "test"),
                 new RoomDTO(1L, "T204",60,"Lab","T"),
                 List.of(new GroupDTO(1L, "group1", "TI",3, 1)),
@@ -137,14 +138,14 @@ public class ScheduleTest {
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
 
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
 
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.PARA,Pending.APPROVED)).thenReturn(false);
 
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Monday", "08:00")).thenReturn(List.of());
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Monday", "08:00",Pending.APPROVED)).thenReturn(List.of());
 
 
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);

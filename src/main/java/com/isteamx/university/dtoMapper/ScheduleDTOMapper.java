@@ -35,6 +35,7 @@ public class ScheduleDTOMapper {
                 schedule.getStartingHour(),
                 schedule.getEndingHour(),
                 schedule.getFrequency(),
+                schedule.getPending(),
                 professorMapper.toDTO(schedule.getProfessor()),
                 roomMapper.toDTO(schedule.getRoom()),
                 groupDTOs,
@@ -53,6 +54,7 @@ public class ScheduleDTOMapper {
         schedule.setStartingHour(dto.startingHour());
         schedule.setEndingHour(dto.endingHour());
         schedule.setFrequency(dto.frequency());
+        schedule.setPending(dto.pending());
         schedule.setProfessor(professorMapper.toEntity(dto.professorDTO()));
         schedule.setRoom(roomMapper.toEntity(dto.roomDTO()));
         if (dto.groups() != null) {

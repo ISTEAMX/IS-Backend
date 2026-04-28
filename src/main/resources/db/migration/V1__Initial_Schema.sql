@@ -52,6 +52,7 @@ CREATE TABLE schedules (
     starting_hour VARCHAR(10) NOT NULL,
     ending_hour VARCHAR(10) NOT NULL,
     frequency VARCHAR(50) NOT NULL,
+    pending VARCHAR(50) NOT NULL ,
     professor_id BIGINT NOT NULL,
     room_id BIGINT NOT NULL,
     group_id BIGINT NOT NULL,

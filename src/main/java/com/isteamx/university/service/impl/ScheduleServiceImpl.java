@@ -6,12 +6,14 @@ import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
 import com.isteamx.university.enums.Frequency;
+import com.isteamx.university.enums.Pending;
 import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.*;
 import com.isteamx.university.service.ScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -65,17 +67,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         for (Group group : groups) {
-            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency())) {
+            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency(), Pending.APPROVED)) {
                 throw new AlreadyExistsException("Group " + group.getIdentifier() + " already has a subject at that specific hour");
             }
         }
 
-        if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(professor, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency())) {
+        if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(professor, createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency(),Pending.APPROVED)) {
             throw new AlreadyExistsException("This professor already has a subject at that specific hour");
         }
 
 
-        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour());
+        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour(),Pending.APPROVED);
 
         Frequency newFrequency = createScheduleRequestDTO.frequency();
 
@@ -102,6 +104,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setRoom(room);
         schedule.setGroups(groups);
         schedule.setSubject(subject);
+        schedule.setPending(Pending.PENDING);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
@@ -130,16 +133,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         for (Group group : groups) {
-            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency(), createScheduleRequestDTO.id())) {
+            if (scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(group, createScheduleRequestDTO.startingHour(), createScheduleRequestDTO.scheduleDay(), createScheduleRequestDTO.frequency(), Pending.APPROVED,createScheduleRequestDTO.id())) {
                 throw new AlreadyExistsException("Group " + group.getIdentifier() + " already has a subject at that specific hour");
             }
         }
 
-        if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(professor,createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency(),createScheduleRequestDTO.id())) {
+        if(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(professor,createScheduleRequestDTO.startingHour(),createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.frequency(),Pending.APPROVED,createScheduleRequestDTO.id())) {
             throw new AlreadyExistsException("The professor already has a Schedule at that specific hour");
         }
 
-        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),schedule.getStartingHour());
+        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(room,createScheduleRequestDTO.scheduleDay(),schedule.getStartingHour(),Pending.APPROVED);
 
         Frequency newFrequency = createScheduleRequestDTO.frequency();
 
@@ -162,6 +165,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setStartingHour(createScheduleRequestDTO.startingHour());
         schedule.setEndingHour(createScheduleRequestDTO.endingHour());
         schedule.setRoom(room);
+        schedule.setPending(Pending.PENDING);
         schedule.setProfessor(professor);
         schedule.setGroups(groups);
         schedule.setSubject(subject);
@@ -183,4 +187,27 @@ public class ScheduleServiceImpl implements ScheduleService {
         return filteredSchedules.stream().map(scheduleDTOMapper::toDTO).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void approveSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
+        schedule.setPending(Pending.APPROVED);
+        scheduleRepository.save(schedule);
+
+        List<Schedule> allSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(schedule.getRoom(),schedule.getScheduleDay(),schedule.getStartingHour(),Pending.PENDING);
+
+        Frequency approvedFrequency = schedule.getFrequency();
+
+        for(Schedule existing : allSchedules){
+            if (existing.getId().equals(schedule.getId())) continue;
+
+            Frequency existingFrequency = existing.getFrequency();
+
+            if(approvedFrequency == Frequency.SAPTAMANAL || existingFrequency == Frequency.SAPTAMANAL || approvedFrequency == existingFrequency) {
+                scheduleRepository.delete(existing);
+            }
+        }
+    }
 }
+

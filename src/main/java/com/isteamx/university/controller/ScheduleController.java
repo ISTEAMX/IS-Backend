@@ -65,4 +65,10 @@ public class ScheduleController {
         return scheduleService.getSchedulesByFilters(filterDTO);
     }
 
+    @PatchMapping("approve/{id}")
+    public ResponseEntity<String> approveSchedule(@PathVariable Long id) {
+        scheduleService.approveSchedule(id);
+        return ResponseEntity.ok("Schedule approved");
+    }
+
 }
