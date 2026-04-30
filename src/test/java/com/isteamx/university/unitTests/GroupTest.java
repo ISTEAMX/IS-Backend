@@ -3,6 +3,8 @@ package com.isteamx.university.unitTests;
 import com.isteamx.university.dto.GroupDTO;
 import com.isteamx.university.dtoMapper.GroupDTOMapper;
 import com.isteamx.university.entity.Group;
+import com.isteamx.university.exception.AlreadyExistsException;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.GroupRepository;
 import com.isteamx.university.service.impl.GroupServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -15,7 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GroupTest {
@@ -97,5 +100,75 @@ public class GroupTest {
 
         assertThat(response).isNotNull();
         assertThat(response.id()).isEqualTo(savedGroup.getId());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenGroupNotFound() {
+        Long id = 99L;
+        when(groupRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> groupService.getGroup(id));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCreateGroupAlreadyExists() {
+        GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI", 3, 1);
+        when(groupRepository.existsByIdentifier(groupDTO.identifier())).thenReturn(true);
+        assertThrows(AlreadyExistsException.class, () -> groupService.createGroup(groupDTO));
+    }
+
+    @Test
+    public void shouldUpdateGroup() {
+        GroupDTO groupDTO = new GroupDTO(1L, "updatedGroup", "C", 2, 1);
+
+        Group existingGroup = new Group();
+        existingGroup.setId(1L);
+        existingGroup.setIdentifier("group1");
+        existingGroup.setSpecialization("TI");
+        existingGroup.setYear(3);
+
+        when(groupRepository.existsByIdentifierAndIdNot(groupDTO.identifier(), groupDTO.id())).thenReturn(false);
+        when(groupRepository.findById(groupDTO.id())).thenReturn(Optional.of(existingGroup));
+        when(groupRepository.save(existingGroup)).thenReturn(existingGroup);
+
+        groupService.updateGroup(groupDTO);
+
+        verify(groupRepository).save(existingGroup);
+        assertThat(existingGroup.getIdentifier()).isEqualTo("updatedGroup");
+        assertThat(existingGroup.getSpecialization()).isEqualTo("C");
+        assertThat(existingGroup.getYear()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateGroupNotFound() {
+        GroupDTO groupDTO = new GroupDTO(99L, "group1", "TI", 3, 1);
+        when(groupRepository.existsByIdentifierAndIdNot(groupDTO.identifier(), groupDTO.id())).thenReturn(false);
+        when(groupRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> groupService.updateGroup(groupDTO));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateGroupAlreadyExists() {
+        GroupDTO groupDTO = new GroupDTO(1L, "duplicate", "TI", 3, 1);
+        when(groupRepository.existsByIdentifierAndIdNot("duplicate", 1L)).thenReturn(true);
+        assertThrows(AlreadyExistsException.class, () -> groupService.updateGroup(groupDTO));
+    }
+
+    @Test
+    public void shouldDeleteGroup() {
+        Long id = 1L;
+        Group group = new Group();
+        group.setId(id);
+        when(groupRepository.findById(id)).thenReturn(Optional.of(group));
+
+        groupService.deleteGroup(id);
+
+        verify(groupRepository).deleteById(id);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDeleteGroupNotFound() {
+        Long id = 99L;
+        when(groupRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> groupService.deleteGroup(id));
     }
 }

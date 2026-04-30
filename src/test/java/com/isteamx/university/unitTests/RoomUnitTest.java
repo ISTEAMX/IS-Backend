@@ -3,6 +3,8 @@ package com.isteamx.university.unitTests;
 import com.isteamx.university.dto.RoomDTO;
 import com.isteamx.university.dtoMapper.RoomDTOMapper;
 import com.isteamx.university.entity.Room;
+import com.isteamx.university.exception.AlreadyExistsException;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.impl.RoomServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RoomUnitTest {
@@ -40,6 +43,7 @@ public class RoomUnitTest {
 
         RoomDTO savedRoomDTO = new RoomDTO(1L, "T204",60,"Lab","T");
 
+        when(roomRepository.existsByNameOrLocation(roomDTO.name(), roomDTO.location())).thenReturn(false);
         when(roomRepository.save(any(Room.class))).thenReturn(savedRoom);
         when(roomDTOMapper.toDTO(savedRoom)).thenReturn(savedRoomDTO);
 
@@ -92,5 +96,76 @@ public class RoomUnitTest {
         assertThat(response.size()).isEqualTo(2);
         assertThat(response.get(0).id()).isEqualTo(1L);
         assertThat(response.get(1).id()).isEqualTo(2L);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenRoomNotFound() {
+        Long id = 99L;
+        when(roomRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> roomService.getRoom(id));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCreateRoomAlreadyExists() {
+        RoomDTO roomDTO = new RoomDTO(1L, "T204", 60, "Lab", "T");
+        when(roomRepository.existsByNameOrLocation(roomDTO.name(), roomDTO.location())).thenReturn(true);
+        assertThrows(AlreadyExistsException.class, () -> roomService.createRoom(roomDTO));
+    }
+
+    @Test
+    public void shouldUpdateRoom() {
+        RoomDTO roomDTO = new RoomDTO(1L, "T205", 80, "Seminar", "T");
+
+        Room existingRoom = new Room();
+        existingRoom.setId(1L);
+        existingRoom.setName("T204");
+        existingRoom.setCapacity(60);
+        existingRoom.setType("Lab");
+        existingRoom.setLocation("T");
+
+        when(roomRepository.existsByNameOrLocationExcludingId(roomDTO.name(), roomDTO.location(), roomDTO.id())).thenReturn(false);
+        when(roomRepository.findById(roomDTO.id())).thenReturn(Optional.of(existingRoom));
+        when(roomRepository.save(existingRoom)).thenReturn(existingRoom);
+
+        roomService.updateRoom(roomDTO);
+
+        verify(roomRepository).save(existingRoom);
+        assertThat(existingRoom.getName()).isEqualTo("T205");
+        assertThat(existingRoom.getCapacity()).isEqualTo(80);
+        assertThat(existingRoom.getType()).isEqualTo("Seminar");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateRoomNotFound() {
+        RoomDTO roomDTO = new RoomDTO(99L, "T204", 60, "Lab", "T");
+        when(roomRepository.existsByNameOrLocationExcludingId(roomDTO.name(), roomDTO.location(), roomDTO.id())).thenReturn(false);
+        when(roomRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> roomService.updateRoom(roomDTO));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateRoomAlreadyExists() {
+        RoomDTO roomDTO = new RoomDTO(1L, "duplicate", 60, "Lab", "T");
+        when(roomRepository.existsByNameOrLocationExcludingId("duplicate", "T", 1L)).thenReturn(true);
+        assertThrows(AlreadyExistsException.class, () -> roomService.updateRoom(roomDTO));
+    }
+
+    @Test
+    public void shouldDeleteRoom() {
+        Long id = 1L;
+        Room room = new Room();
+        room.setId(id);
+        when(roomRepository.findById(id)).thenReturn(Optional.of(room));
+
+        roomService.deleteRoom(id);
+
+        verify(roomRepository).deleteById(id);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDeleteRoomNotFound() {
+        Long id = 99L;
+        when(roomRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> roomService.deleteRoom(id));
     }
 }

@@ -3,6 +3,8 @@ package com.isteamx.university.unitTests;
 import com.isteamx.university.dto.SubjectDTO;
 import com.isteamx.university.dtoMapper.SubjectDTOMapper;
 import com.isteamx.university.entity.Subject;
+import com.isteamx.university.exception.AlreadyExistsException;
+import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.SubjectRepository;
 import com.isteamx.university.service.impl.SubjectServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -15,8 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SubjectTest {
@@ -99,5 +102,85 @@ public class SubjectTest {
 
         assertThat(resp).isNotNull();
         assertThat(resp.id()).isEqualTo(subjectDTO.id());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenSubjectNotFound() {
+        Long id = 99L;
+        when(subjectRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> subjectService.getSubjectById(id));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenCreateSubjectAlreadyExists() {
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
+
+        when(subjectRepository.existsByNameAndActivityType(subjectDTO.name(), subjectDTO.activityType())).thenReturn(true);
+
+        assertThrows(AlreadyExistsException.class, () -> subjectService.createSubject(subjectDTO));
+    }
+
+    @Test
+    public void shouldUpdateSubject() {
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "updated", "Seminar");
+
+        Subject existingSubject = new Subject();
+        existingSubject.setId(1L);
+        existingSubject.setName("test");
+        existingSubject.setActivityType("Lab");
+
+        when(subjectRepository.findById(subjectDTO.id())).thenReturn(Optional.of(existingSubject));
+        when(subjectRepository.existsByNameAndActivityTypeAndIdNot(subjectDTO.name(), subjectDTO.activityType(), subjectDTO.id())).thenReturn(false);
+        when(subjectRepository.save(existingSubject)).thenReturn(existingSubject);
+
+        subjectService.updateSubject(subjectDTO);
+
+        verify(subjectRepository).save(existingSubject);
+        assertThat(existingSubject.getName()).isEqualTo("updated");
+        assertThat(existingSubject.getActivityType()).isEqualTo("Seminar");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateSubjectNotFound() {
+        SubjectDTO subjectDTO = new SubjectDTO(99L, "test", "Lab");
+
+        when(subjectRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> subjectService.updateSubject(subjectDTO));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUpdateSubjectAlreadyExists() {
+        SubjectDTO subjectDTO = new SubjectDTO(1L, "duplicate", "Lab");
+
+        Subject existingSubject = new Subject();
+        existingSubject.setId(1L);
+
+        when(subjectRepository.findById(1L)).thenReturn(Optional.of(existingSubject));
+        when(subjectRepository.existsByNameAndActivityTypeAndIdNot("duplicate", "Lab", 1L)).thenReturn(true);
+
+        assertThrows(AlreadyExistsException.class, () -> subjectService.updateSubject(subjectDTO));
+    }
+
+    @Test
+    public void shouldDeleteSubject() {
+        Long id = 1L;
+        Subject subject = new Subject();
+        subject.setId(id);
+
+        when(subjectRepository.findById(id)).thenReturn(Optional.of(subject));
+
+        subjectService.deleteSubject(id);
+
+        verify(subjectRepository).deleteById(id);
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenDeleteSubjectNotFound() {
+        Long id = 99L;
+        when(subjectRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> subjectService.deleteSubject(id));
     }
 }
