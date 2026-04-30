@@ -1,6 +1,7 @@
 package com.isteamx.university.controller;
 import com.isteamx.university.dto.RoomDTO;
 import com.isteamx.university.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,7 @@ public class RoomController {
     @Operation(summary = "Create a new room", description = "Registers a new classroom in the system.")
     @ApiResponse(responseCode = "200", description = "Room created successfully")
     @PostMapping("/create")
-    public ResponseEntity<String> createRoom(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<String> createRoom(@Valid @RequestBody RoomDTO roomDTO) {
                 roomService.createRoom(roomDTO);
         return ResponseEntity.ok("Room created");
     }
@@ -41,7 +42,7 @@ public class RoomController {
     @Operation(summary = "Update room details", description = "Updates capacity, type, or name of a room.")
     @ApiResponse(responseCode = "200", description = "Room updated successfully")
     @PutMapping("/update")
-    public ResponseEntity<String> updateRoom(@RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<String> updateRoom(@Valid @RequestBody RoomDTO roomDTO) {
         roomService.updateRoom(roomDTO);
         return ResponseEntity.ok("Room updated");
     }

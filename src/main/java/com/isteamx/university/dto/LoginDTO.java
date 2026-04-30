@@ -1,5 +1,14 @@
 package com.isteamx.university.dto;
 
-public record LoginDTO(String email, String password) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
+public record LoginDTO(
+        @NotBlank(message = "Email is required")
+        @Email(message = "Email must be valid")
+        String email,
+
+        @NotBlank(message = "Password is required")
+        String password
+) {
 }

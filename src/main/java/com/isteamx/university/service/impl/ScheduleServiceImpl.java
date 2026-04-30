@@ -12,6 +12,7 @@ import com.isteamx.university.repository.*;
 import com.isteamx.university.service.ScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return schedules.stream().map(scheduleDTOMapper::toDTO).collect(Collectors.toList());
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     @Transactional
     public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) {
@@ -87,7 +89,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
 
             if(existingFrequency == newFrequency){
-                throw new ResourceNotFoundException("The Room was already occupied");
+                throw new AlreadyExistsException("The Room was already occupied");
             }
 
         }
@@ -109,6 +111,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     @Transactional
     public void updateSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) {
@@ -139,7 +142,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new AlreadyExistsException("The professor already has a Schedule at that specific hour");
         }
 
-        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),schedule.getStartingHour());
+        // BUG FIX: Use the NEW startingHour from the DTO, not the old one from the DB entity
+        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room,createScheduleRequestDTO.scheduleDay(),createScheduleRequestDTO.startingHour());
 
         Frequency newFrequency = createScheduleRequestDTO.frequency();
 
@@ -170,6 +174,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         scheduleRepository.save(schedule);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Override
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));

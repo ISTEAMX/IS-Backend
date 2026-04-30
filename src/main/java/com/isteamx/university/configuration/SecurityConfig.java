@@ -33,6 +33,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                /*
+                 * CSRF is intentionally disabled because this API is stateless (JWT-based).
+                 * Tokens are sent via Authorization header (not cookies), so CSRF attacks
+                 * are not applicable. If cookie-based auth is ever added, CSRF must be re-enabled.
+                 */
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/change-password").authenticated()
@@ -42,9 +47,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/group/user/**").permitAll()
                         .requestMatchers("/api/subject/user/**").permitAll()
                         .requestMatchers("/api/schedule/user/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
-                        .requestMatchers("/api/monitoring/**").permitAll()
+                        .requestMatchers("/api/monitoring/**").authenticated()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

@@ -4,6 +4,7 @@ import com.isteamx.university.dto.CreateScheduleRequestDTO;
 import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.service.ScheduleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,14 +39,14 @@ public class ScheduleController {
     @Operation(summary = "Add a new schedule entry", description = "Creates a new schedule entry.")
     @ApiResponse(responseCode = "200", description = "Schedule added successfully")
     @PostMapping("/add")
-    public ScheduleDTO addSchedule(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
+    public ScheduleDTO addSchedule(@Valid @RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
             return scheduleService.addSchedule(createScheduleRequestDTO);
     }
 
     @Operation(summary = "Update an existing schedule", description = "Updates the details of a schedule entry.")
     @ApiResponse(responseCode = "200", description = "Schedule updated successfully")
     @PutMapping("/update")
-    public ResponseEntity<String> updateSchedule(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
+    public ResponseEntity<String> updateSchedule(@Valid @RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
         scheduleService.updateSchedule(createScheduleRequestDTO);
         return ResponseEntity.ok("Schedule updated");
     }

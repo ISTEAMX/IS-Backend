@@ -5,6 +5,7 @@ import com.isteamx.university.dto.LoginDTO;
 import com.isteamx.university.dto.ResponseLoginDTO;
 import com.isteamx.university.dto.UserDTO;
 import com.isteamx.university.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,7 @@ public class UserController {
     @Operation(summary = "Register a new user", description = "Creates a new user account with the provided details.")
     @ApiResponse(responseCode = "200", description = "User registered successfully")
     @PostMapping("/register")
-    public ResponseEntity<Map<String,String>> registerUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String,String>> registerUser(@Valid @RequestBody UserDTO userDTO) {
          authService.register(userDTO);
          return ResponseEntity.ok().body(Map.of("message", "User registered successfully"));
     }
@@ -38,7 +39,7 @@ public class UserController {
     @Operation(summary = "Authenticate user", description = "Returns a JWT token if credentials are valid.")
     @ApiResponse(responseCode = "200", description = "Authentication successful")
     @PostMapping("/login")
-    public ResponseLoginDTO loginUser(@RequestBody LoginDTO loginDTO) {
+    public ResponseLoginDTO loginUser(@Valid @RequestBody LoginDTO loginDTO) {
         return authService.login(loginDTO);
     }
 
@@ -46,7 +47,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Password changed successfully")
     @PutMapping("/change-password")
     public ResponseEntity<Map<String, String>> changePassword(
-            @RequestBody ChangePasswordDTO changePasswordDTO,
+            @Valid @RequestBody ChangePasswordDTO changePasswordDTO,
             Authentication authentication) {
         authService.changePassword(authentication.getName(), changePasswordDTO);
         return ResponseEntity.ok().body(Map.of("message", "Password changed successfully"));

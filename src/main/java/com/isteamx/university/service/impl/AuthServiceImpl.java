@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    public final UserRepository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserDTOMapper userDTOMapper;
     private final JwtUtil jwtUtil;
@@ -67,16 +67,19 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(userDTO.role());
         user.setPasswordChanged(false);
 
-        Professor professor = new Professor();
-        professor.setFirstName(userDTO.firstName());
-        professor.setLastName(userDTO.lastName());
-        if (userDTO.professor() != null && userDTO.professor().department() != null) {
-            professor.setDepartment(userDTO.professor().department());
-        } else {
-            professor.setDepartment("Default Department");
+        // Only create a Professor entity for users with the PROFESSOR role
+        if ("PROFESSOR".equals(userDTO.role())) {
+            Professor professor = new Professor();
+            professor.setFirstName(userDTO.firstName());
+            professor.setLastName(userDTO.lastName());
+            if (userDTO.professor() != null && userDTO.professor().department() != null) {
+                professor.setDepartment(userDTO.professor().department());
+            } else {
+                professor.setDepartment("Default Department");
+            }
+            professor.setUser(user);
+            user.setProfessor(professor);
         }
-        professor.setUser(user);
-        user.setProfessor(professor);
 
         User savedUser = userRepository.save(user);
 

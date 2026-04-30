@@ -77,6 +77,7 @@ public class RoomServiceImpl implements RoomService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public void deleteRoom(Long id) {
         if(roomRepository.findById(id).isEmpty()){
             throw new ResourceNotFoundException("Room with id " + id + " doesn't exist");

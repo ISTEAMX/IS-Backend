@@ -2,6 +2,7 @@ package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.GroupDTO;
 import com.isteamx.university.service.GroupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +28,12 @@ public class GroupController {
     }
 
     @PostMapping("/create")
-    public GroupDTO createGroup(@RequestBody GroupDTO groupDTO) {
+    public GroupDTO createGroup(@Valid @RequestBody GroupDTO groupDTO) {
         return groupService.createGroup(groupDTO);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> updateGroup(@RequestBody GroupDTO groupDTO) {
+    public ResponseEntity<String> updateGroup(@Valid @RequestBody GroupDTO groupDTO) {
         groupService.updateGroup(groupDTO);
         return ResponseEntity.ok("Group updated");
     }

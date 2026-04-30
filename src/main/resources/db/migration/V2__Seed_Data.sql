@@ -2,7 +2,8 @@
 -- Seed data for University of Oradea - Faculty of Electrical Engineering and Information Technology
 
 -- =============================================
--- Users (password is BCrypt hash of "password123")
+-- Users (initial seeded accounts — all require password change on first login)
+-- Note: password_changed column is added in V3 with DEFAULT FALSE
 -- =============================================
 INSERT INTO users (id, first_name, last_name, email, password, role) VALUES
     -- Admins

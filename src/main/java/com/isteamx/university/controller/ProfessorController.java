@@ -2,6 +2,7 @@ package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.service.ProfessorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ProfessorController {
     }
 
     @PutMapping()
-    public ResponseEntity<Map<String,String>> updateProfessor(@RequestBody ProfessorDTO professorDTO) {
+    public ResponseEntity<Map<String,String>> updateProfessor(@Valid @RequestBody ProfessorDTO professorDTO) {
         professorService.updateProfessor(professorDTO);
         return ResponseEntity.ok(Map.of("Message","Professor updated"));
     }
