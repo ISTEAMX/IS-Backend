@@ -1,6 +1,7 @@
 package com.isteamx.university.configuration;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,13 +25,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value("${cors.allowed-origins:http://localhost,http://localhost:3000}")
+    private List<String> allowedOrigins;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 /*
@@ -40,14 +43,16 @@ public class SecurityConfig {
                  */
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/change-password").authenticated()
-                        .requestMatchers("/api/user/**").permitAll()
+                        .requestMatchers("/api/user/register").authenticated()
                         .requestMatchers("/api/professor/user/**").permitAll()
                         .requestMatchers("/api/room/user/**").permitAll()
                         .requestMatchers("/api/group/user/**").permitAll()
                         .requestMatchers("/api/subject/user/**").permitAll()
                         .requestMatchers("/api/schedule/user/**").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/monitoring/**").authenticated()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
@@ -64,11 +69,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost",
-                "http://localhost:3000",
-                "http://isteamx-unisync.s3-website.eu-central-1.amazonaws.com"
-        ));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

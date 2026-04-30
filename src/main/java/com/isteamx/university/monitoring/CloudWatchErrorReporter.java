@@ -58,7 +58,7 @@ public class CloudWatchErrorReporter {
         }
     }
 
-    public void reportError(String context, Exception ex) {
+    public synchronized void reportError(String context, Exception ex) {
         if (!enabled || client == null) {
             return;
         }
@@ -96,7 +96,7 @@ public class CloudWatchErrorReporter {
         }
     }
 
-    public void reportError(String context, String message) {
+    public synchronized void reportError(String context, String message) {
         if (!enabled || client == null) {
             return;
         }

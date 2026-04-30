@@ -60,6 +60,7 @@ public class RoomServiceImpl implements RoomService {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @Override
+    @Transactional
     public void updateRoom(RoomDTO roomDTO) {
 
         if(roomRepository.existsByNameOrLocationExcludingId(roomDTO.name(),roomDTO.location(),roomDTO.id())){
