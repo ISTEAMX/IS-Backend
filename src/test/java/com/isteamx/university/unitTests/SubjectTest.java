@@ -12,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,19 +66,20 @@ public class SubjectTest {
         subject2.setId(2L);
         subject2.setName("test2");
 
-        List<Subject> list = List.of(subject1, subject2);
-
         SubjectDTO subjectDTO1 = new SubjectDTO(1L, "test", "Lab");
         SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test2", "Lab");
 
-        when(subjectRepository.findAll()).thenReturn(list);
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Subject> subjectPage = new PageImpl<>(List.of(subject1, subject2), pageable, 2);
+
+        when(subjectRepository.findAll(pageable)).thenReturn(subjectPage);
         when(subjectDTOMapper.toDTO(subject1)).thenReturn(subjectDTO1);
         when(subjectDTOMapper.toDTO(subject2)).thenReturn(subjectDTO2);
 
-        List<SubjectDTO> resp = subjectService.getSubjects();
+        Page<SubjectDTO> resp = subjectService.getSubjects(pageable);
 
         assertThat(resp).isNotNull();
-        assertThat(resp.size()).isEqualTo(2);
+        assertThat(resp.getContent()).hasSize(2);
     }
 
     @Test

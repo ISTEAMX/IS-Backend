@@ -1,12 +1,12 @@
 package com.isteamx.university.service;
 
 import com.isteamx.university.dto.ProfessorDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ProfessorService {
     ProfessorDTO getProfessor(Long professorId);
-    List<ProfessorDTO> getProfessors();
+    Page<ProfessorDTO> getProfessors(Pageable pageable);
     void updateProfessor(ProfessorDTO professor);
     void deleteProfessor(Long professorId);
 }

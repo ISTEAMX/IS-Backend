@@ -9,11 +9,11 @@ import com.isteamx.university.repository.SubjectRepository;
 import com.isteamx.university.service.SubjectService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +29,8 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public List<SubjectDTO> getSubjects() {
-        List<Subject> subjects = subjectRepository.findAll();
-        return subjects.stream().map(subjectDTOMapper::toDTO).collect(Collectors.toList());
+    public Page<SubjectDTO> getSubjects(Pageable pageable) {
+        return subjectRepository.findAll(pageable).map(subjectDTOMapper::toDTO);
     }
 
     @Override

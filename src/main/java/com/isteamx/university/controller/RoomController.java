@@ -1,14 +1,17 @@
 package com.isteamx.university.controller;
+
+import com.isteamx.university.dto.ApiResponseWrapper;
 import com.isteamx.university.dto.RoomDTO;
 import com.isteamx.university.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/room")
@@ -18,40 +21,35 @@ public class RoomController {
     private final RoomService roomService;
 
     @Operation(summary = "Get room by ID", description = "Returns details of a specific classroom.")
-    @ApiResponse(responseCode = "200", description = "Room retrieved successfully")
     @GetMapping("/user/{id}")
-    public RoomDTO getRoom(@PathVariable Long id) {
-        return roomService.getRoom(id);
+    public ResponseEntity<ApiResponseWrapper<RoomDTO>> getRoom(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(roomService.getRoom(id), "Room retrieved successfully"));
     }
 
-    @Operation(summary = "Get all rooms", description = "Returns a list of all available classrooms.")
-    @ApiResponse(responseCode = "200", description = "Rooms retrieved successfully")
+    @Operation(summary = "Get all rooms", description = "Returns a paginated list of all available classrooms.")
     @GetMapping("/user/rooms")
-    public List<RoomDTO> getRooms() {
-        return roomService.getRooms();
+    public ResponseEntity<ApiResponseWrapper<Page<RoomDTO>>> getRooms(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(roomService.getRooms(pageable), "Rooms retrieved successfully"));
     }
 
     @Operation(summary = "Create a new room", description = "Registers a new classroom in the system.")
-    @ApiResponse(responseCode = "200", description = "Room created successfully")
     @PostMapping("/create")
-    public ResponseEntity<String> createRoom(@Valid @RequestBody RoomDTO roomDTO) {
-                roomService.createRoom(roomDTO);
-        return ResponseEntity.ok("Room created");
+    public ResponseEntity<ApiResponseWrapper<RoomDTO>> createRoom(@Valid @RequestBody RoomDTO roomDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseWrapper.created(roomService.createRoom(roomDTO), "Room created successfully"));
     }
 
     @Operation(summary = "Update room details", description = "Updates capacity, type, or name of a room.")
-    @ApiResponse(responseCode = "200", description = "Room updated successfully")
     @PutMapping("/update")
-    public ResponseEntity<String> updateRoom(@Valid @RequestBody RoomDTO roomDTO) {
+    public ResponseEntity<ApiResponseWrapper<Void>> updateRoom(@Valid @RequestBody RoomDTO roomDTO) {
         roomService.updateRoom(roomDTO);
-        return ResponseEntity.ok("Room updated");
+        return ResponseEntity.ok(ApiResponseWrapper.success("Room updated successfully"));
     }
 
     @Operation(summary = "Delete a room", description = "Removes a room from the system by its ID.")
-    @ApiResponse(responseCode = "200", description = "Room deleted successfully")
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteRoom(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseWrapper<Void>> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
-        return ResponseEntity.ok("Room deleted");
+        return ResponseEntity.ok(ApiResponseWrapper.success("Room deleted successfully"));
     }
 }

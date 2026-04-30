@@ -9,11 +9,11 @@ import com.isteamx.university.repository.GroupRepository;
 import com.isteamx.university.service.GroupService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +29,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupDTO> getGroups() {
-        List<Group> groups = groupRepository.findAll();
-        return groups.stream().map(groupDTOMapper::toDTO).collect(Collectors.toList());
+    public Page<GroupDTO> getGroups(Pageable pageable) {
+        return groupRepository.findAll(pageable).map(groupDTOMapper::toDTO);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

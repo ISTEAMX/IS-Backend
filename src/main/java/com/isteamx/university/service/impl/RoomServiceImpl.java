@@ -9,11 +9,11 @@ import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,10 +52,8 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDTO> getRooms() {
-        List<Room> rooms = roomRepository.findAll();
-
-        return rooms.stream().map(roomDTOMapper::toDTO).collect(Collectors.toList());
+    public Page<RoomDTO> getRooms(Pageable pageable) {
+        return roomRepository.findAll(pageable).map(roomDTOMapper::toDTO);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

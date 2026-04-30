@@ -7,10 +7,10 @@ import com.isteamx.university.repository.ProfessorRepository;
 import com.isteamx.university.service.ProfessorService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,9 +26,8 @@ public class ProfessorServiceImpl implements ProfessorService {
     }
 
     @Override
-    public List<ProfessorDTO> getProfessors() {
-        List<Professor> professors = professorRepository.findAllByUserRole("PROFESSOR");
-        return professors.stream().map(professorDTOMapper::toDTO).collect(Collectors.toList());
+    public Page<ProfessorDTO> getProfessors(Pageable pageable) {
+        return professorRepository.findAllByUserRole("PROFESSOR", pageable).map(professorDTOMapper::toDTO);
     }
 
     @Override

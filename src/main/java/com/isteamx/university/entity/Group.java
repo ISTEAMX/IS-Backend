@@ -26,7 +26,7 @@ public class Group {
     @Column(nullable = false)
     private String specialization;
 
-    @Column(nullable = false)
+    @Column(name = "\"year\"", nullable = false)
     private int year;
 
     @Column(nullable = false)

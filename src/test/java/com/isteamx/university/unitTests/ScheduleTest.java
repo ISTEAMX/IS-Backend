@@ -14,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,16 +103,18 @@ public class ScheduleTest {
         schedule.setId(1L);
         Schedule schedule2 = new Schedule();
         schedule2.setId(2L);
-        List<Schedule> list = List.of(schedule,schedule2);
 
-        when(scheduleRepository.findAll()).thenReturn(list);
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule, schedule2), pageable, 2);
+
+        when(scheduleRepository.findAll(pageable)).thenReturn(schedulePage);
         when(scheduleDTOMapper.toDTO(schedule)).thenReturn(scheduleDTO);
         when(scheduleDTOMapper.toDTO(schedule2)).thenReturn(scheduleDTO2);
 
-        List<ScheduleDTO> response = scheduleService.getSchedules();
+        Page<ScheduleDTO> response = scheduleService.getSchedules(pageable);
 
         assertThat(response).isNotNull();
-        assertThat(response).hasSize(2);
+        assertThat(response.getContent()).hasSize(2);
 
     }
 
@@ -424,15 +430,18 @@ public class ScheduleTest {
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
         ScheduleDTO scheduleDTO = new ScheduleDTO(1L, "Monday", "08:00", "10:00", Frequency.PARA, professorDTO, roomDTO, List.of(groupDTO), subjectDTO);
 
-        when(scheduleRepository.findSchedulesByDynamicFilters(1L, null, null, null, "Monday", null))
-                .thenReturn(List.of(schedule));
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule), pageable, 1);
+
+        when(scheduleRepository.findSchedulesByDynamicFilters(1L, null, null, null, "Monday", null, pageable))
+                .thenReturn(schedulePage);
         when(scheduleDTOMapper.toDTO(schedule)).thenReturn(scheduleDTO);
 
-        List<ScheduleDTO> response = scheduleService.getSchedulesByFilters(filterDTO);
+        Page<ScheduleDTO> response = scheduleService.getSchedulesByFilters(filterDTO, pageable);
 
         assertThat(response).isNotNull();
-        assertThat(response).hasSize(1);
-        assertThat(response.get(0).scheduleDay()).isEqualTo("Monday");
+        assertThat(response.getContent()).hasSize(1);
+        assertThat(response.getContent().get(0).scheduleDay()).isEqualTo("Monday");
     }
 
     @Test

@@ -3,14 +3,14 @@ package com.isteamx.university.service;
 import com.isteamx.university.dto.CreateScheduleRequestDTO;
 import com.isteamx.university.dto.FilterDTO;
 import com.isteamx.university.dto.ScheduleDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface ScheduleService {
 
     ScheduleDTO getSchedule(Long id);
 
-    List<ScheduleDTO> getSchedules();
+    Page<ScheduleDTO> getSchedules(Pageable pageable);
 
     ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO);
 
@@ -18,6 +18,5 @@ public interface ScheduleService {
 
     void deleteSchedule(Long id);
 
-    List<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO);
-
+    Page<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO, Pageable pageable);
 }

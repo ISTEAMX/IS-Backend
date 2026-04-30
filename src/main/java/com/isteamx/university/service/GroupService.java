@@ -1,14 +1,13 @@
 package com.isteamx.university.service;
 
 import com.isteamx.university.dto.GroupDTO;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface GroupService {
     GroupDTO getGroup(Long id);
-    List<GroupDTO> getGroups();
+    Page<GroupDTO> getGroups(Pageable pageable);
     GroupDTO createGroup(GroupDTO groupDTO);
     void updateGroup(GroupDTO groupDTO);
     void deleteGroup(Long id);
-
 }

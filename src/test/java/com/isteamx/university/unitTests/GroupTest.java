@@ -12,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,21 +62,22 @@ public class GroupTest {
         Group group2 = new Group();
         group2.setId(2L);
 
-        List<Group> groupList = List.of(group1, group2);
-
         GroupDTO dto1 = new GroupDTO(1L, "group1", "TI",3, 1);
         GroupDTO dto2 = new GroupDTO(2L, "group2", "TI",3, 1);
 
-        when(groupRepository.findAll()).thenReturn(groupList);
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Group> groupPage = new PageImpl<>(List.of(group1, group2), pageable, 2);
+
+        when(groupRepository.findAll(pageable)).thenReturn(groupPage);
         when(groupDTOMapper.toDTO(group1)).thenReturn(dto1);
         when(groupDTOMapper.toDTO(group2)).thenReturn(dto2);
 
-        List<GroupDTO> response = groupService.getGroups();
+        Page<GroupDTO> response = groupService.getGroups(pageable);
 
         assertThat(response).isNotNull();
-        assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).id()).isEqualTo(dto1.id());
-        assertThat(response.get(1).id()).isEqualTo(dto2.id());
+        assertThat(response.getContent()).hasSize(2);
+        assertThat(response.getContent().get(0).id()).isEqualTo(dto1.id());
+        assertThat(response.getContent().get(1).id()).isEqualTo(dto2.id());
     }
 
     @Test

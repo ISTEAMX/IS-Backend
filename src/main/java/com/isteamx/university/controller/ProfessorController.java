@@ -1,14 +1,14 @@
 package com.isteamx.university.controller;
 
+import com.isteamx.university.dto.ApiResponseWrapper;
 import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.service.ProfessorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/professor")
@@ -18,25 +18,25 @@ public class ProfessorController {
     private final ProfessorService professorService;
 
     @GetMapping("/user/{id}")
-    public ProfessorDTO getProfessor(@PathVariable Long id) {
-        return professorService.getProfessor(id);
+    public ResponseEntity<ApiResponseWrapper<ProfessorDTO>> getProfessor(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(professorService.getProfessor(id), "Professor retrieved successfully"));
     }
 
     @GetMapping("/user")
-    public List<ProfessorDTO> getProfessors() {
-        return professorService.getProfessors();
+    public ResponseEntity<ApiResponseWrapper<Page<ProfessorDTO>>> getProfessors(Pageable pageable) {
+        return ResponseEntity.ok(ApiResponseWrapper.success(professorService.getProfessors(pageable), "Professors retrieved successfully"));
     }
 
     @PutMapping()
-    public ResponseEntity<Map<String,String>> updateProfessor(@Valid @RequestBody ProfessorDTO professorDTO) {
+    public ResponseEntity<ApiResponseWrapper<Void>> updateProfessor(@Valid @RequestBody ProfessorDTO professorDTO) {
         professorService.updateProfessor(professorDTO);
-        return ResponseEntity.ok(Map.of("Message","Professor updated"));
+        return ResponseEntity.ok(ApiResponseWrapper.success("Professor updated successfully"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String,String>> deleteProfessor(@PathVariable Long id) {
+    public ResponseEntity<ApiResponseWrapper<Void>> deleteProfessor(@PathVariable Long id) {
         professorService.deleteProfessor(id);
-        return ResponseEntity.ok(Map.of("Message","Professor deleted"));
+        return ResponseEntity.ok(ApiResponseWrapper.success("Professor deleted successfully"));
     }
 
 }

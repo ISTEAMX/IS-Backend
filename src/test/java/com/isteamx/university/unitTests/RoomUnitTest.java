@@ -12,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -84,18 +88,19 @@ public class RoomUnitTest {
 
         RoomDTO roomDTO2 = new RoomDTO(2L, "T205",60,"Lab","T");
 
-        List<Room> rooms = List.of(room1, room2);
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Room> roomPage = new PageImpl<>(List.of(room1, room2), pageable, 2);
 
-        when(roomRepository.findAll()).thenReturn(rooms);
+        when(roomRepository.findAll(pageable)).thenReturn(roomPage);
         when(roomDTOMapper.toDTO(room1)).thenReturn(roomDTO1);
         when(roomDTOMapper.toDTO(room2)).thenReturn(roomDTO2);
 
-        List<RoomDTO> response = roomService.getRooms();
+        Page<RoomDTO> response = roomService.getRooms(pageable);
 
         assertThat(response).isNotNull();
-        assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).id()).isEqualTo(1L);
-        assertThat(response.get(1).id()).isEqualTo(2L);
+        assertThat(response.getContent().size()).isEqualTo(2);
+        assertThat(response.getContent().get(0).id()).isEqualTo(1L);
+        assertThat(response.getContent().get(1).id()).isEqualTo(2L);
     }
 
     @Test

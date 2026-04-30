@@ -12,6 +12,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,21 +75,22 @@ public class ProfessorTest {
         user2.setRole("PROFESSOR");
         prof2.setUser(user2);
 
-        List<Professor> mockProfessors = List.of(prof1, prof2);
-
         ProfessorDTO dto1 = new ProfessorDTO(1L, "Lukas", null, null);
         ProfessorDTO dto2 = new ProfessorDTO(2L, "Zozo", null, null);
 
-        when(professorRepository.findAllByUserRole("PROFESSOR")).thenReturn(mockProfessors);
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<Professor> professorPage = new PageImpl<>(List.of(prof1, prof2), pageable, 2);
+
+        when(professorRepository.findAllByUserRole("PROFESSOR", pageable)).thenReturn(professorPage);
         when(professorDTOMapper.toDTO(prof1)).thenReturn(dto1);
         when(professorDTOMapper.toDTO(prof2)).thenReturn(dto2);
 
-        List<ProfessorDTO> response = professorService.getProfessors();
+        Page<ProfessorDTO> response = professorService.getProfessors(pageable);
 
         assertThat(response).isNotNull();
-        assertThat(response.size()).isEqualTo(2);
-        assertThat(response.get(0).firstName()).isEqualTo("Lukas");
-        assertThat(response.get(1).firstName()).isEqualTo("Zozo");
+        assertThat(response.getContent()).hasSize(2);
+        assertThat(response.getContent().get(0).firstName()).isEqualTo("Lukas");
+        assertThat(response.getContent().get(1).firstName()).isEqualTo("Zozo");
     }
 
     @Test

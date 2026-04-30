@@ -12,6 +12,8 @@ import com.isteamx.university.repository.*;
 import com.isteamx.university.service.ScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -39,11 +41,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleDTO> getSchedules() {
-
-        List<Schedule> schedules = scheduleRepository.findAll();
-
-        return schedules.stream().map(scheduleDTOMapper::toDTO).toList();
+    public Page<ScheduleDTO> getSchedules(Pageable pageable) {
+        return scheduleRepository.findAll(pageable).map(scheduleDTOMapper::toDTO);
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -115,10 +114,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public List<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO) {
-        List<Schedule> filteredSchedules = scheduleRepository.findSchedulesByDynamicFilters(filterDTO.professorId(),filterDTO.roomId(),filterDTO.groupId(),filterDTO.subjectId(),filterDTO.scheduleDay(),filterDTO.frequency());
+    public Page<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO, Pageable pageable) {
+        Page<Schedule> filteredSchedules = scheduleRepository.findSchedulesByDynamicFilters(
+                filterDTO.professorId(), filterDTO.roomId(), filterDTO.groupId(),
+                filterDTO.subjectId(), filterDTO.scheduleDay(), filterDTO.frequency(), pageable);
 
-        return filteredSchedules.stream().map(scheduleDTOMapper::toDTO).toList();
+        return filteredSchedules.map(scheduleDTOMapper::toDTO);
     }
 
     // ─────────────────────────────────────────────────
