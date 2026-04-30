@@ -74,7 +74,7 @@ public class ProfessorTest {
         ProfessorDTO dto1 = new ProfessorDTO(1L, "Lukas", null, null);
         ProfessorDTO dto2 = new ProfessorDTO(2L, "Zozo", null, null);
 
-        when(professorRepository.findAll()).thenReturn(mockProfessors);
+        when(professorRepository.findAllByUserRole("PROFESSOR")).thenReturn(mockProfessors);
         when(professorDTOMapper.toDTO(prof1)).thenReturn(dto1);
         when(professorDTOMapper.toDTO(prof2)).thenReturn(dto2);
 
