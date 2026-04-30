@@ -1,8 +1,9 @@
 package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.LoginDTO;
-import com.isteamx.university.dto.UserDTO;
+import com.isteamx.university.dto.RegisterDTO;
 import com.isteamx.university.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,17 +21,14 @@ public class UserController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String,String>> RegisterUser(@RequestBody UserDTO userDTO) {
-         authService.register(userDTO);
-         return ResponseEntity.ok().body(Map.of("message", "User registered successfully"));
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody @Valid RegisterDTO registerDTO) {
+        authService.register(registerDTO);
+        return ResponseEntity.ok().body(Map.of("message", "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String,String>> LoginUser(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<Map<String, String>> loginUser(@RequestBody @Valid LoginDTO loginDTO) {
         String token = authService.login(loginDTO);
-
-        return ResponseEntity.ok().body(Map.of("token: ", token));
+        return ResponseEntity.ok().body(Map.of("token", token));
     }
-
-
 }

@@ -2,8 +2,11 @@ package com.isteamx.university.unitTests;
 
 import com.isteamx.university.dto.LoginDTO;
 import com.isteamx.university.dto.ProfessorDTO;
+import com.isteamx.university.dto.RegisterDTO;
 import com.isteamx.university.dto.UserDTO;
+import com.isteamx.university.dtoMapper.ProfessorDTOMapper;
 import com.isteamx.university.dtoMapper.UserDTOMapper;
+import com.isteamx.university.entity.Professor;
 import com.isteamx.university.entity.User;
 import com.isteamx.university.repository.UserRepository;
 import com.isteamx.university.service.impl.AuthServiceImpl;
@@ -19,6 +22,7 @@ import java.util.Optional;
 
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +41,9 @@ public class AuthTest {
     @Mock
     UserDTOMapper userDTOMapper;
 
+    @Mock
+    ProfessorDTOMapper professorDTOMapper;
+
     @InjectMocks
     private AuthServiceImpl authServiceImpl;
 
@@ -54,7 +61,7 @@ public class AuthTest {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
 
-        when(passwordEncoder.matches(loginDTO.getPassword(),user.getPassword())).thenReturn(true);
+        when(passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())).thenReturn(true);
 
         String token = "Token";
 
@@ -69,39 +76,41 @@ public class AuthTest {
     @Test
     public void shouldRegister() {
 
-    UserDTO userDTO = new UserDTO();
-    userDTO.setEmail("test@test.com");
-    userDTO.setPassword("password");
-    userDTO.setRole("USER");
-    ProfessorDTO professor = new ProfessorDTO();
-    userDTO.setProfessor(professor);
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setEmail("test@test.com");
+        registerDTO.setPassword("password123");
+        ProfessorDTO professorDTO = new ProfessorDTO();
+        professorDTO.setFirstName("John");
+        professorDTO.setLastName("Doe");
+        professorDTO.setDepartment("CS");
+        registerDTO.setProfessor(professorDTO);
 
-    User newUser = new User();
-    newUser.setEmail("test@test.com");
-    newUser.setPassword("password");
+        Professor professor = new Professor();
+        professor.setFirstName("John");
+        professor.setLastName("Doe");
+        professor.setDepartment("CS");
 
-    User savedUser = new User();
-    savedUser.setId(1L);
-    savedUser.setEmail("test@test.com");
-    savedUser.setPassword("encodedPassword");
+        User savedUser = new User();
+        savedUser.setId(1L);
+        savedUser.setEmail("test@test.com");
+        savedUser.setPassword("encodedPassword");
+        savedUser.setRole("PROFESSOR");
 
-    UserDTO newUserDTO = new UserDTO();
-    newUserDTO.setEmail("test@test.com");
-    newUserDTO.setPassword("encodedPassword");
+        UserDTO expectedDTO = new UserDTO();
+        expectedDTO.setId(1L);
+        expectedDTO.setEmail("test@test.com");
+        expectedDTO.setRole("PROFESSOR");
 
-    when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(registerDTO.getEmail())).thenReturn(Optional.empty());
+        when(professorDTOMapper.toEntity(professorDTO)).thenReturn(professor);
+        when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
+        when(userRepository.save(any(User.class))).thenReturn(savedUser);
+        when(userDTOMapper.toDTO(savedUser)).thenReturn(expectedDTO);
 
-    when(userDTOMapper.toEntity(userDTO)).thenReturn(newUser);
+        UserDTO response = authServiceImpl.register(registerDTO);
 
-    when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-
-    when(userRepository.save(newUser)).thenReturn(savedUser);
-
-    when(userDTOMapper.toDTO(savedUser)).thenReturn(newUserDTO);
-
-    UserDTO response = authServiceImpl.register(userDTO);
-
-    assertThat(response).isNotNull();
-    assertThat(response.getEmail()).isEqualTo(savedUser.getEmail());
+        assertThat(response).isNotNull();
+        assertThat(response.getEmail()).isEqualTo(savedUser.getEmail());
+        assertThat(response.getRole()).isEqualTo("PROFESSOR");
     }
 }

@@ -1,19 +1,9 @@
 package com.isteamx.university.configuration;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-@Configuration
-public class CorsConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry config){
-        config.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("*")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
-    }
+/**
+ * CORS is configured in SecurityConfig.corsConfigurationSource().
+ * This class is intentionally left empty to avoid overriding the
+ * security-level CORS configuration with a wildcard origin.
+ */
+public class CorsConfig {
 }

@@ -2,6 +2,7 @@ package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.ProfessorDTO;
 import com.isteamx.university.service.ProfessorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +28,14 @@ public class ProfessorController {
     }
 
     @PutMapping()
-    public ResponseEntity<Map<String,String>> updateProfessor(@RequestBody ProfessorDTO professorDTO) {
+    public ResponseEntity<Map<String, String>> updateProfessor(@RequestBody @Valid ProfessorDTO professorDTO) {
         professorService.updateProfessor(professorDTO);
-        return ResponseEntity.ok(Map.of("Message","Professor updated"));
+        return ResponseEntity.ok(Map.of("message", "Professor updated"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String,String>> deleteProfessor(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> deleteProfessor(@PathVariable Long id) {
         professorService.deleteProfessor(id);
-        return ResponseEntity.ok(Map.of("Message","Professor deleted"));
+        return ResponseEntity.ok(Map.of("message", "Professor deleted"));
     }
-
 }

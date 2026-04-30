@@ -1,10 +1,11 @@
 package com.isteamx.university.controller;
 
 import com.isteamx.university.dto.RoomDTO;
-import com.isteamx.university.repository.RoomRepository;
 import com.isteamx.university.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,19 +28,22 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Map<String,String>> createRoom(@RequestBody RoomDTO roomDTO) {
-                roomService.createRoom(roomDTO);
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Map<String, String>> createRoom(@RequestBody @Valid RoomDTO roomDTO) {
+        roomService.createRoom(roomDTO);
         return ResponseEntity.ok(Map.of("message", "Room created"));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Map<String,String>> updateRoom(@RequestBody RoomDTO roomDTO) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Map<String, String>> updateRoom(@RequestBody @Valid RoomDTO roomDTO) {
         roomService.updateRoom(roomDTO);
         return ResponseEntity.ok(Map.of("message", "Room updated"));
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<Map<String,String>> deleteRoom(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Map<String, String>> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
         return ResponseEntity.ok(Map.of("message", "Room deleted"));
     }

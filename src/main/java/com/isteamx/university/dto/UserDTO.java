@@ -11,9 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO {
-    public Long id;
-    public String email;
-    public String password;
-    public String role;
-    public ProfessorDTO professor;
+    private Long id;
+    private String email;
+    private String role;
+    private ProfessorDTO professor;
 }
