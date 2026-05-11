@@ -6,6 +6,7 @@ import com.isteamx.university.dto.ScheduleDTO;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
 import com.isteamx.university.enums.Frequency;
+import com.isteamx.university.enums.Pending;
 import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.*;
@@ -45,7 +46,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.findAll(pageable).map(scheduleDTOMapper::toDTO);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PROFESSOR')")
     @Override
     @Transactional
     public ScheduleDTO addSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) {
@@ -69,6 +70,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setRoom(room);
         schedule.setGroups(groups);
         schedule.setSubject(subject);
+        schedule.setPending(Pending.PENDING);
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
@@ -76,7 +78,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PROFESSOR')")
     @Override
     @Transactional
     public void updateSchedule(CreateScheduleRequestDTO createScheduleRequestDTO) {
@@ -98,15 +100,15 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setStartingHour(createScheduleRequestDTO.startingHour());
         schedule.setEndingHour(createScheduleRequestDTO.endingHour());
         schedule.setRoom(room);
+        schedule.setPending(Pending.PENDING);
         schedule.setProfessor(professor);
         schedule.setGroups(groups);
         schedule.setSubject(subject);
 
-
         scheduleRepository.save(schedule);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'PROFESSOR')")
     @Override
     public void deleteSchedule(Long id) {
         Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
@@ -120,6 +122,36 @@ public class ScheduleServiceImpl implements ScheduleService {
                 filterDTO.subjectId(), filterDTO.scheduleDay(), filterDTO.frequency(), pageable);
 
         return filteredSchedules.map(scheduleDTOMapper::toDTO);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void approveSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
+        schedule.setPending(Pending.APPROVED);
+        scheduleRepository.save(schedule);
+
+        // Remove conflicting pending schedules for the same room/day/hour
+        List<Schedule> allSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                schedule.getRoom(), schedule.getScheduleDay(), schedule.getStartingHour(), Pending.PENDING);
+        Frequency approvedFrequency = schedule.getFrequency();
+        for (Schedule existing : allSchedules) {
+            if (existing.getId().equals(schedule.getId())) continue;
+            Frequency existingFrequency = existing.getFrequency();
+            if (approvedFrequency == Frequency.SAPTAMANAL || existingFrequency == Frequency.SAPTAMANAL || approvedFrequency == existingFrequency) {
+                scheduleRepository.delete(existing);
+            }
+        }
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public void rejectSchedule(Long id) {
+        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("The schedule you're looking for was not found"));
+        schedule.setPending(Pending.REJECTED);
+        scheduleRepository.save(schedule);
     }
 
     // ─────────────────────────────────────────────────
@@ -139,38 +171,33 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     /**
      * Validates that no scheduling conflicts exist for groups, professor, or room.
-     *
-     * @param dto       the schedule request
-     * @param professor the resolved professor
-     * @param room      the resolved room
-     * @param groups    the resolved groups
-     * @param excludeId if non-null, excludes this schedule ID from conflict checks (for updates)
+     * Only checks against APPROVED schedules.
      */
     private void validateNoConflicts(CreateScheduleRequestDTO dto, Professor professor, Room room, List<Group> groups, Long excludeId) {
         String startingHour = dto.startingHour();
         String scheduleDay = dto.scheduleDay();
         Frequency newFrequency = dto.frequency();
 
-        // Check group conflicts
+        // Check group conflicts (only against approved schedules)
         for (Group group : groups) {
             boolean conflict = excludeId == null
-                    ? scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(group, startingHour, scheduleDay, newFrequency)
-                    : scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(group, startingHour, scheduleDay, newFrequency, excludeId);
+                    ? scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(group, startingHour, scheduleDay, newFrequency, Pending.APPROVED)
+                    : scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(group, startingHour, scheduleDay, newFrequency, Pending.APPROVED, excludeId);
             if (conflict) {
                 throw new AlreadyExistsException("Group " + group.getIdentifier() + " already has a subject at that specific hour");
             }
         }
 
-        // Check professor conflicts
+        // Check professor conflicts (only against approved schedules)
         boolean professorConflict = excludeId == null
-                ? scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(professor, startingHour, scheduleDay, newFrequency)
-                : scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(professor, startingHour, scheduleDay, newFrequency, excludeId);
+                ? scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(professor, startingHour, scheduleDay, newFrequency, Pending.APPROVED)
+                : scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(professor, startingHour, scheduleDay, newFrequency, Pending.APPROVED, excludeId);
         if (professorConflict) {
             throw new AlreadyExistsException("This professor already has a subject at that specific hour");
         }
 
-        // Check room conflicts
-        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHour(room, scheduleDay, startingHour);
+        // Check room conflicts (only against approved schedules)
+        List<Schedule> existingSchedules = scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(room, scheduleDay, startingHour, Pending.APPROVED);
 
         for (Schedule existing : existingSchedules) {
             if (excludeId != null && existing.getId().equals(excludeId)) continue;

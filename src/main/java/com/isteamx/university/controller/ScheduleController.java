@@ -63,4 +63,18 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponseWrapper.success(scheduleService.getSchedulesByFilters(filterDTO, pageable), "Filtered schedules retrieved successfully"));
     }
 
+    @Operation(summary = "Approve a schedule entry", description = "Approves a pending schedule entry (ADMIN only).")
+    @PatchMapping("/approve/{id}")
+    public ResponseEntity<ApiResponseWrapper<Void>> approveSchedule(@PathVariable Long id) {
+        scheduleService.approveSchedule(id);
+        return ResponseEntity.ok(ApiResponseWrapper.success("Schedule approved"));
+    }
+
+    @Operation(summary = "Reject a schedule entry", description = "Rejects a pending schedule entry (ADMIN only).")
+    @PatchMapping("/reject/{id}")
+    public ResponseEntity<ApiResponseWrapper<Void>> rejectSchedule(@PathVariable Long id) {
+        scheduleService.rejectSchedule(id);
+        return ResponseEntity.ok(ApiResponseWrapper.success("Schedule rejected"));
+    }
+
 }

@@ -5,6 +5,7 @@ import com.isteamx.university.dto.*;
 import com.isteamx.university.dtoMapper.ScheduleDTOMapper;
 import com.isteamx.university.entity.*;
 import com.isteamx.university.enums.Frequency;
+import com.isteamx.university.enums.Pending;
 import com.isteamx.university.exception.AlreadyExistsException;
 import com.isteamx.university.exception.ResourceNotFoundException;
 import com.isteamx.university.repository.*;
@@ -66,7 +67,7 @@ public class ScheduleTest {
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
 
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA, Pending.PENDING, professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
         Schedule schedule = new Schedule();
 
         when(scheduleRepository.findById(scheduleDTO.id())).thenReturn(Optional.of(schedule));
@@ -95,8 +96,8 @@ public class ScheduleTest {
         GroupDTO groupDTO2 = new GroupDTO(2L, "group1", "TI",3, 1);
         SubjectDTO subjectDTO2 = new SubjectDTO(2L, "test", "Lab");
 
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA,professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
-        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA,professorDTO2 ,roomDTO2,List.of(groupDTO2),subjectDTO2);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L,"Monday","00:08","00:10", Frequency.PARA, Pending.PENDING, professorDTO ,roomDTO,List.of(groupDTO),subjectDTO);
+        ScheduleDTO scheduleDTO2 = new ScheduleDTO(2L,"Monday","08:00","00:10", Frequency.PARA, Pending.PENDING, professorDTO2 ,roomDTO2,List.of(groupDTO2),subjectDTO2);
 
 
         Schedule schedule = new Schedule();
@@ -133,7 +134,7 @@ public class ScheduleTest {
         savedSchedule.setId(100L);
 
         ScheduleDTO expectedResponse = new ScheduleDTO(
-                100L, "Monday", "08:00", "10:00", Frequency.PARA,
+                100L, "Monday", "08:00", "10:00", Frequency.PARA, Pending.PENDING,
                 new ProfessorDTO(1L, "test", "test", "test"),
                 new RoomDTO(1L, "T204",60,"Lab","T"),
                 List.of(new GroupDTO(1L, "group1", "TI",3, 1)),
@@ -145,14 +146,14 @@ public class ScheduleTest {
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
 
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
 
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
 
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Monday", "08:00")).thenReturn(List.of());
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Monday", "08:00", Pending.APPROVED)).thenReturn(List.of());
 
 
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);
@@ -191,8 +192,8 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.PARA)).thenReturn(true);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.addSchedule(inp));
     }
@@ -210,10 +211,10 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.PARA)).thenReturn(true);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.addSchedule(inp));
     }
@@ -235,12 +236,12 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.SAPTAMANAL)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.SAPTAMANAL)).thenReturn(false);
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Monday", "08:00")).thenReturn(List.of(existingSchedule));
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.SAPTAMANAL, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.SAPTAMANAL, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Monday", "08:00", Pending.APPROVED)).thenReturn(List.of(existingSchedule));
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.addSchedule(inp));
     }
@@ -262,12 +263,12 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.PARA)).thenReturn(false);
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Monday", "08:00")).thenReturn(List.of(existingSchedule));
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.PARA, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Monday", "08:00", Pending.APPROVED)).thenReturn(List.of(existingSchedule));
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.addSchedule(inp));
     }
@@ -351,12 +352,12 @@ public class ScheduleTest {
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
 
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(
-                group, "10:00", "Tuesday", Frequency.SAPTAMANAL, 1L)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(
-                professor, "10:00", "Tuesday", Frequency.SAPTAMANAL, 1L)).thenReturn(false);
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Tuesday", "10:00")).thenReturn(List.of());
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(
+                group, "10:00", "Tuesday", Frequency.SAPTAMANAL, Pending.APPROVED, 1L)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(
+                professor, "10:00", "Tuesday", Frequency.SAPTAMANAL, Pending.APPROVED, 1L)).thenReturn(false);
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Tuesday", "10:00", Pending.APPROVED)).thenReturn(List.of());
         when(scheduleRepository.save(existingSchedule)).thenReturn(existingSchedule);
 
         scheduleService.updateSchedule(inp);
@@ -389,8 +390,8 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(
-                group, "08:00", "Monday", Frequency.PARA, 1L)).thenReturn(true);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED, 1L)).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.updateSchedule(inp));
     }
@@ -410,10 +411,10 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndIdNot(
-                group, "08:00", "Monday", Frequency.PARA, 1L)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndIdNot(
-                professor, "08:00", "Monday", Frequency.PARA, 1L)).thenReturn(true);
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(
+                group, "08:00", "Monday", Frequency.PARA, Pending.APPROVED, 1L)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPendingAndIdNot(
+                professor, "08:00", "Monday", Frequency.PARA, Pending.APPROVED, 1L)).thenReturn(true);
 
         assertThrows(AlreadyExistsException.class, () -> scheduleService.updateSchedule(inp));
     }
@@ -428,7 +429,7 @@ public class ScheduleTest {
         RoomDTO roomDTO = new RoomDTO(1L, "T204", 60, "Lab", "T");
         GroupDTO groupDTO = new GroupDTO(1L, "group1", "TI", 3, 1);
         SubjectDTO subjectDTO = new SubjectDTO(1L, "test", "Lab");
-        ScheduleDTO scheduleDTO = new ScheduleDTO(1L, "Monday", "08:00", "10:00", Frequency.PARA, professorDTO, roomDTO, List.of(groupDTO), subjectDTO);
+        ScheduleDTO scheduleDTO = new ScheduleDTO(1L, "Monday", "08:00", "10:00", Frequency.PARA, Pending.APPROVED, professorDTO, roomDTO, List.of(groupDTO), subjectDTO);
 
         Pageable pageable = PageRequest.of(0, 50);
         Page<Schedule> schedulePage = new PageImpl<>(List.of(schedule), pageable, 1);
@@ -461,7 +462,7 @@ public class ScheduleTest {
         savedSchedule.setId(100L);
 
         ScheduleDTO expectedResponse = new ScheduleDTO(
-                100L, "Monday", "08:00", "10:00", Frequency.INPARA,
+                100L, "Monday", "08:00", "10:00", Frequency.INPARA, Pending.PENDING,
                 new ProfessorDTO(1L, "test", "test", "test"),
                 new RoomDTO(1L, "T204", 60, "Lab", "T"),
                 List.of(new GroupDTO(1L, "group1", "TI", 3, 1)),
@@ -472,12 +473,12 @@ public class ScheduleTest {
         when(roomRepository.findById(1L)).thenReturn(Optional.of(room));
         when(groupRepository.findById(1L)).thenReturn(Optional.of(group));
         when(subjectRepository.findById(1L)).thenReturn(Optional.of(subject));
-        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequency(
-                group, "08:00", "Monday", Frequency.INPARA)).thenReturn(false);
-        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequency(
-                professor, "08:00", "Monday", Frequency.INPARA)).thenReturn(false);
-        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHour(
-                room, "Monday", "08:00")).thenReturn(List.of(existingSchedule));
+        when(scheduleRepository.existsByGroupsContainingAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                group, "08:00", "Monday", Frequency.INPARA, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.existsByProfessorAndStartingHourAndScheduleDayAndFrequencyAndPending(
+                professor, "08:00", "Monday", Frequency.INPARA, Pending.APPROVED)).thenReturn(false);
+        when(scheduleRepository.findByRoomAndScheduleDayAndStartingHourAndPending(
+                room, "Monday", "08:00", Pending.APPROVED)).thenReturn(List.of(existingSchedule));
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(savedSchedule);
         when(scheduleDTOMapper.toDTO(savedSchedule)).thenReturn(expectedResponse);
 

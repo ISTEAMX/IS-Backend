@@ -19,4 +19,8 @@ public interface ScheduleService {
     void deleteSchedule(Long id);
 
     Page<ScheduleDTO> getSchedulesByFilters(FilterDTO filterDTO, Pageable pageable);
+
+    void approveSchedule(Long id);
+
+    void rejectSchedule(Long id);
 }
