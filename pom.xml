@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.isteamx</groupId>
 	<artifactId>university</artifactId>
-	<version>1.0.15-SNAPSHOT</version>
+	<version>1.0.16-SNAPSHOT</version>
 	<name>university</name>
 	<description>University Schedule Management System - ISTEAMX</description>
 	<url>https://github.com/isteamx</url>
