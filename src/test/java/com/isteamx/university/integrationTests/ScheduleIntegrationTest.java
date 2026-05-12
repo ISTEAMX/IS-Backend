@@ -153,11 +153,18 @@ public class ScheduleIntegrationTest extends BaseIntegrationTest {
                 null, "Monday", "08:00", "10:00", Frequency.SAPTAMANAL,
                 professorId, subjectId, List.of(groupId), roomId);
 
-        mockMvc.perform(post("/api/schedule/add")
+        String response = mockMvc.perform(post("/api/schedule/add")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        // Approve the first schedule so it becomes an active conflict
+        Long scheduleId = objectMapper.readTree(response).get("data").get("id").asLong();
+        mockMvc.perform(patch("/api/schedule/approve/" + scheduleId)
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
 
         // Try same slot — should conflict on group
         mockMvc.perform(post("/api/schedule/add")
